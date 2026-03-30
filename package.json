@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "seed:employees": "node scripts/seed-employees.mjs"
+    "seed:employees": "node scripts/seed-employees.mjs",
+    "seed:videos": "node scripts/seed-videos.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",

@@ -3,29 +3,63 @@
 import { motion } from "framer-motion";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "../ui/card";
 import { Badge } from "../ui/badge";
+import { useEffect, useState } from "react";
+import { getMediaSettings, type HomeVideos } from "@/lib/firestore/media";
 
-const services = [
+const servicesBase = [
   {
+    id: "medicalMarketing",
     title: "Medical Marketing",
     desc: "Dedicated marketing specialists for hospitals and clinics. We focus on increasing new patients, advertising your core services, and improving your brand's digital image.",
     tag: "Healthcare Growth",
-    videoSrc: "/assets/videos/Gold_particles_converging_202603292000.mp4"
+    fallbackVideoSrc: "/assets/videos/Gold_particles_converging_202603292000.mp4",
+    env: "NEXT_PUBLIC_VIDEO_MEDICAL_MARKETING_URL",
   },
   {
+    id: "digitalMarketing",
     title: "Digital Marketing",
     desc: "End-to-end online solutions including Google & Social Ads, custom application design, and comprehensive brand development to connect with your audience.",
     tag: "Online Presence",
-    videoSrc: "/assets/videos/Luminous_point_emitting_202603292002.mp4"
+    fallbackVideoSrc: "/assets/videos/Luminous_point_emitting_202603292002.mp4",
+    env: "NEXT_PUBLIC_VIDEO_DIGITAL_MARKETING_URL",
   },
   {
+    id: "eventsOrganising",
     title: "Events Organising and Managing",
     desc: "Professional organization and flawless execution of medical exhibitions, conferences, and specialized courses to elevate your industry presence.",
     tag: "Professional Events",
-    videoSrc: "/assets/videos/Lines_forming_architectural_202603292002.mp4"
-  }
-];
+    fallbackVideoSrc: "/assets/videos/Lines_forming_architectural_202603292002.mp4",
+    env: "NEXT_PUBLIC_VIDEO_EVENTS_ORGANISING_URL",
+  },
+] as const;
 
 export function ServicesPreviewSection() {
+  const [homeVideos, setHomeVideos] = useState<HomeVideos | null>(null);
+
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      try {
+        const settings = await getMediaSettings();
+        if (mounted) setHomeVideos(settings?.homeVideos || null);
+      } catch {
+        // ignore; fallbacks stay
+      }
+    })();
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  const services = servicesBase.map((svc) => {
+    const envValue = (process.env as any)?.[svc.env] as string | undefined;
+    const fromDb = (homeVideos as any)?.[svc.id] as string | undefined;
+    return {
+      ...svc,
+      videoSrc: fromDb || envValue || svc.fallbackVideoSrc,
+    };
+  });
+
   return (
     <section className="py-32 bg-surface">
       <div className="max-w-7xl mx-auto px-6 space-y-16">
@@ -60,6 +94,7 @@ export function ServicesPreviewSection() {
                       loop 
                       muted 
                       playsInline 
+                      preload="metadata"
                       className="absolute inset-0 w-full h-full object-cover z-0 opacity-40 group-hover:opacity-70 transition-opacity duration-700"
                     >
                       <source src={svc.videoSrc} type="video/mp4" />

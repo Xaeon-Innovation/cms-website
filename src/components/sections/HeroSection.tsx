@@ -4,15 +4,36 @@ import { motion } from "framer-motion";
 import { Button } from "../ui/button";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { getMediaSettings } from "@/lib/firestore/media";
 
 const words = ["Growth", "Acquisition", "Excellence", "Patients"];
+const HERO_VIDEO_FALLBACK = "/assets/videos/13820343_3840_2160_30fps.mp4";
 
 export function HeroSection() {
   const [index, setIndex] = useState(0);
+  const [videoSrc, setVideoSrc] = useState(
+    process.env.NEXT_PUBLIC_VIDEO_HERO_URL || HERO_VIDEO_FALLBACK
+  );
 
   useEffect(() => {
     const interval = setInterval(() => setIndex((i) => (i + 1) % words.length), 3000);
     return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      try {
+        const settings = await getMediaSettings();
+        const src = settings?.homeVideos?.hero;
+        if (mounted && src) setVideoSrc(src);
+      } catch {
+        // ignore; fallback stays
+      }
+    })();
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   return (
@@ -24,9 +45,10 @@ export function HeroSection() {
           loop 
           muted 
           playsInline 
+          preload="metadata"
           className="absolute min-w-full min-h-full object-cover top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-0 opacity-80"
         >
-          <source src="/assets/videos/13820343_3840_2160_30fps.mp4" type="video/mp4" />
+          <source src={videoSrc} type="video/mp4" />
         </video>
         {/* Dark overlay for text contrast and premium feel */}
         <div className="absolute inset-0 bg-gradient-to-t from-surface via-surface/80 to-surface/50 z-10" />

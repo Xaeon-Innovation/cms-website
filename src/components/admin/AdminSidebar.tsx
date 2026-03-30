@@ -10,6 +10,7 @@ const menuItems = [
   { href: "/admin/dashboard", label: "Overview", icon: LayoutDashboard },
   { href: "/admin/leads", label: "Leads Pipeline", icon: Users },
   { href: "/admin/employees", label: "Employees", icon: Users },
+  { href: "/admin/media", label: "Media", icon: MessageSquare },
   { href: "/admin/mobadra-requests", label: "Mobadra Requests", icon: HeartHandshake },
   { href: "/admin/reviews", label: "Review Moderation", icon: MessageSquare },
   { href: "/admin/settings", label: "Platform Settings", icon: Settings },
