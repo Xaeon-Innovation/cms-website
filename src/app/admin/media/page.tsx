@@ -61,10 +61,12 @@ export default function AdminMediaPage() {
     const ext = extFromFile(file);
     const pathname = `videos/home/${Date.now()}-${slotId}.${ext}`;
 
+    // Use single-part upload (multipart: false). The MPU endpoint
+    // (vercel.com/api/blob/mpu) does not send CORS headers for browser origins.
     const blob = await upload(pathname, file, {
       access: "public",
       handleUploadUrl: "/api/media/handle-upload",
-      multipart: true,
+      multipart: false,
       contentType: file.type || (ext === "webm" ? "video/webm" : "video/mp4"),
       headers: {
         Authorization: `Bearer ${token}`,
