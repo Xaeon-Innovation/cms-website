@@ -1,0 +1,79 @@
+@import "tailwindcss";
+@import "tailwindcss/utilities";
+
+@theme inline {
+  /* Colors */
+  --color-surface: #0a1514;
+  --color-surface-container: #172220;
+  --color-surface-container-high: #212c2b;
+  --color-surface-container-lowest: #06100f;
+  --color-surface-container-low: #131e1c;
+  --color-surface-bright: #303b3a;
+
+  --color-primary: #fff4e1;
+  --color-primary-container: #e9d7b1;
+  --color-on-primary: #3a2f15;
+  --color-primary-fixed: #e8c583;
+  --color-on-primary-fixed: #231a04;
+
+  --color-secondary: #a7cfc2;
+  --color-secondary-container: #2b5046;
+  --color-on-secondary: #10362e;
+  --color-on-secondary-container: #99c1b5;
+
+  --color-tertiary: #fff4e7;
+  --color-tertiary-container: #f2d5a7;
+  --color-on-tertiary: #3f2d0d;
+
+  --color-error: #ffb4ab;
+  --color-error-container: #93000a;
+  --color-on-error: #690005;
+
+  --color-outline: #979084;
+  --color-outline-variant: #4b463c;
+
+  /* Typography */
+  --font-display: var(--font-noto-serif);
+  --font-body: var(--font-inter);
+  --font-sans: var(--font-inter);
+  --font-arabic: var(--font-inter); /* Can map to Cairo or similar later if needed */
+  
+  /* Add theme aliases for tailwind utilities like bg-background */
+  --color-background: var(--color-surface);
+  --color-foreground: #d9e5e2; /* on-surface */
+  
+  /* Spacing (Base scale is 3 multiplier usually, but Tailwind uses 0.25rem scale. We'll add specific spacing if needed) */
+  --border-radius-sm: 0.125rem;
+}
+
+@layer base {
+  :root {
+    /* Define dark mode explicitly since no light mode */
+    --background: var(--color-surface);
+    --foreground: #d9e5e2;
+  }
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-body), sans-serif;
+  @apply antialiased selection:bg-primary-container selection:text-on-primary-fixed;
+}
+
+/* Glassmorphism Classes */
+@layer utilities {
+  .glass {
+    background: rgba(255, 255, 255, 0.04);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+  }
+
+  .ghost-border {
+    border: 1px solid rgba(75, 70, 60, 0.15); /* outline_variant at 15% */
+  }
+
+  .ambient-shadow {
+    box-shadow: 0 20px 60px rgba(16, 54, 46, 0.06); /* on_secondary at 6% */
+  }
+}
