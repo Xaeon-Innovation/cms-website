@@ -54,7 +54,7 @@ export async function POST(req: NextRequest) {
       url: blob.url,
       pathname: blob.pathname,
       contentType: blob.contentType,
-      size: blob.size,
+      size: file.size,
     });
   } catch (err: any) {
     console.error(err);
