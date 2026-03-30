@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { upload } from "@vercel/blob/client";
 import { useAuth } from "@/context/AuthContext";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -47,26 +48,30 @@ export default function AdminMediaPage() {
     refresh();
   }, []);
 
+  function extFromFile(file: File) {
+    const n = file.name.toLowerCase();
+    if (n.endsWith(".webm")) return "webm";
+    return "mp4";
+  }
+
   const uploadSlot = async (slotId: Slot["id"], file: File): Promise<UploadResult> => {
     if (!user) throw new Error("Not signed in");
     const token = await user.getIdToken();
 
-    const form = new FormData();
-    form.append("file", file);
-    form.append("slot", slotId);
+    const ext = extFromFile(file);
+    const pathname = `videos/home/${Date.now()}-${slotId}.${ext}`;
 
-    const res = await fetch("/api/media/upload", {
-      method: "POST",
-      headers: { Authorization: `Bearer ${token}` },
-      body: form,
+    const blob = await upload(pathname, file, {
+      access: "public",
+      handleUploadUrl: "/api/media/handle-upload",
+      multipart: true,
+      contentType: file.type || (ext === "webm" ? "video/webm" : "video/mp4"),
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     });
 
-    if (!res.ok) {
-      const payload = await res.json().catch(() => ({}));
-      throw new Error(payload?.error || "Upload failed");
-    }
-
-    return (await res.json()) as UploadResult;
+    return { url: blob.url, pathname: blob.pathname };
   };
 
   const onSave = async () => {
