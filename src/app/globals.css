@@ -52,6 +52,11 @@
     --background: var(--color-surface);
     --foreground: #d9e5e2;
   }
+
+  html,
+  body {
+    overflow-x: hidden;
+  }
 }
 
 body {
