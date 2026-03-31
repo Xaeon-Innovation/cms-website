@@ -6,7 +6,11 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import Image from "next/image";
 
-import { getEmployees, type Employee as DbEmployee } from "@/lib/firestore/employees";
+import {
+  getEmployees,
+  getEmployeeSettings,
+  type Employee as DbEmployee,
+} from "@/lib/firestore/employees";
 
 type EmployeeGroup = {
   groupName: string;
@@ -17,6 +21,7 @@ export default function AboutPage() {
   const [teamLoading, setTeamLoading] = useState(true);
   const [teamError, setTeamError] = useState<string | null>(null);
   const [employees, setEmployees] = useState<DbEmployee[]>([]);
+  const [departmentOrder, setDepartmentOrder] = useState<string[]>([]);
 
   useEffect(() => {
     let mounted = true;
@@ -24,8 +29,14 @@ export default function AboutPage() {
       try {
         setTeamLoading(true);
         setTeamError(null);
-        const data = await getEmployees();
-        if (mounted) setEmployees(data);
+        const [data, settings] = await Promise.all([
+          getEmployees(),
+          getEmployeeSettings(),
+        ]);
+        if (mounted) {
+          setEmployees(data);
+          setDepartmentOrder(settings.departmentOrder);
+        }
       } catch (e: any) {
         if (mounted) setTeamError(e?.message || "Failed to load team");
       } finally {
@@ -57,8 +68,16 @@ export default function AboutPage() {
     }));
 
     // Stable, friendly ordering of departments.
-    return groups.sort((a, b) => a.groupName.localeCompare(b.groupName));
-  }, [employees]);
+    return groups.sort((a, b) => {
+      const aIndex = departmentOrder.indexOf(a.groupName);
+      const bIndex = departmentOrder.indexOf(b.groupName);
+      const aRank = aIndex === -1 ? Number.POSITIVE_INFINITY : aIndex;
+      const bRank = bIndex === -1 ? Number.POSITIVE_INFINITY : bIndex;
+
+      if (aRank !== bRank) return aRank - bRank;
+      return a.groupName.localeCompare(b.groupName);
+    });
+  }, [departmentOrder, employees]);
 
   return (
     <div className="bg-surface pt-32 pb-24">

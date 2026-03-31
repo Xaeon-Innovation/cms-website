@@ -3,10 +3,18 @@
 import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import { useAuth } from "@/context/AuthContext";
-import { createEmployee, deleteEmployee, Employee, getEmployees } from "@/lib/firestore/employees";
+import {
+  createEmployee,
+  deleteEmployee,
+  Employee,
+  getEmployees,
+  getEmployeeSettings,
+  saveEmployeeDepartmentOrder,
+} from "@/lib/firestore/employees";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { ArrowDown, ArrowUp } from "lucide-react";
 
 type UploadResult = {
   url: string;
@@ -29,9 +37,12 @@ export default function AdminEmployeesPage() {
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [savingDepartmentOrder, setSavingDepartmentOrder] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [departmentOrderMessage, setDepartmentOrderMessage] = useState<string | null>(null);
 
   const [employees, setEmployees] = useState<Employee[]>([]);
+  const [departmentOrder, setDepartmentOrder] = useState<string[]>([]);
 
   const [name, setName] = useState("");
   const [role, setRole] = useState("");
@@ -47,8 +58,27 @@ export default function AdminEmployeesPage() {
   const refresh = async () => {
     setLoading(true);
     try {
-      const data = await getEmployees();
+      const [data, settings] = await Promise.all([
+        getEmployees(),
+        getEmployeeSettings(),
+      ]);
+
       setEmployees(data);
+      const employeeDepartments = Array.from(
+        new Set(
+          data
+            .map((employee) => employee.department?.trim())
+            .filter((value): value is string => Boolean(value))
+        )
+      );
+      const savedOrder = settings.departmentOrder.filter((department) =>
+        employeeDepartments.includes(department)
+      );
+      const missingDepartments = employeeDepartments.filter(
+        (department) => !savedOrder.includes(department)
+      );
+
+      setDepartmentOrder([...savedOrder, ...missingDepartments]);
     } finally {
       setLoading(false);
     }
@@ -146,6 +176,31 @@ export default function AdminEmployeesPage() {
     }
   };
 
+  const moveDepartment = (index: number, direction: -1 | 1) => {
+    setDepartmentOrder((current) => {
+      const targetIndex = index + direction;
+      if (targetIndex < 0 || targetIndex >= current.length) return current;
+
+      const next = [...current];
+      const [moved] = next.splice(index, 1);
+      next.splice(targetIndex, 0, moved);
+      return next;
+    });
+  };
+
+  const saveDepartmentOrder = async () => {
+    try {
+      setSavingDepartmentOrder(true);
+      setDepartmentOrderMessage(null);
+      await saveEmployeeDepartmentOrder(departmentOrder);
+      setDepartmentOrderMessage("Department order saved.");
+    } catch (err: any) {
+      setDepartmentOrderMessage(err?.message || "Failed to save department order.");
+    } finally {
+      setSavingDepartmentOrder(false);
+    }
+  };
+
   return (
     <div className="space-y-8">
       <div className="flex justify-between items-end gap-6 flex-wrap">
@@ -210,6 +265,74 @@ export default function AdminEmployeesPage() {
           </Button>
         </div>
       </form>
+
+      <div className="bg-surface-container rounded-sm border border-outline-variant/10 p-8 space-y-6">
+        <div className="flex items-start justify-between gap-6 flex-wrap">
+          <div>
+            <h2 className="text-xl font-display text-primary">Department Display Order</h2>
+            <p className="text-foreground/70 font-body text-sm mt-1">
+              Control how employee departments appear on the About page.
+            </p>
+          </div>
+          <Button
+            type="button"
+            variant="primary"
+            disabled={savingDepartmentOrder || departmentOrder.length === 0}
+            onClick={saveDepartmentOrder}
+          >
+            {savingDepartmentOrder ? "Saving..." : "Save Order"}
+          </Button>
+        </div>
+
+        {departmentOrderMessage && (
+          <div className="text-xs text-primary-fixed border border-primary-fixed/20 bg-primary-fixed/10 rounded-sm p-3">
+            {departmentOrderMessage}
+          </div>
+        )}
+
+        {departmentOrder.length === 0 ? (
+          <div className="text-sm text-foreground/50 font-body">
+            Departments will appear here after you add team members.
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {departmentOrder.map((dept, index) => (
+              <div
+                key={dept}
+                className="flex items-center justify-between gap-4 rounded-sm border border-outline-variant/10 bg-surface-container-low p-4"
+              >
+                <div className="flex items-center gap-3">
+                  <span className="w-6 text-center text-xs text-foreground/40">
+                    {index + 1}
+                  </span>
+                  <span className="font-body text-sm text-foreground/85">{dept}</span>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    size="sm"
+                    disabled={index === 0}
+                    onClick={() => moveDepartment(index, -1)}
+                  >
+                    <ArrowUp className="w-4 h-4" />
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    size="sm"
+                    disabled={index === departmentOrder.length - 1}
+                    onClick={() => moveDepartment(index, 1)}
+                  >
+                    <ArrowDown className="w-4 h-4" />
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
 
       <div className="bg-surface-container rounded-sm border border-outline-variant/10 overflow-hidden">
         {loading ? (
