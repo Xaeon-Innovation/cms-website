@@ -9,6 +9,12 @@ import { getMediaSettings } from "@/lib/firestore/media";
 const words = ["Growth", "Acquisition", "Excellence", "Patients"];
 const HERO_VIDEO_FALLBACK = "/assets/videos/13820343_3840_2160_30fps.mp4";
 
+function getVideoMimeType(src: string) {
+  const cleanSrc = src.split("?")[0]?.toLowerCase() || "";
+  if (cleanSrc.endsWith(".webm")) return "video/webm";
+  return "video/mp4";
+}
+
 export function HeroSection() {
   const [index, setIndex] = useState(0);
   const [videoSrc, setVideoSrc] = useState(
@@ -41,6 +47,7 @@ export function HeroSection() {
       {/* Background Video */}
       <div className="absolute inset-0 w-full h-full overflow-hidden">
         <video 
+          key={videoSrc}
           autoPlay 
           loop 
           muted 
@@ -48,7 +55,7 @@ export function HeroSection() {
           preload="metadata"
           className="absolute min-w-full min-h-full object-cover top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-0 opacity-80"
         >
-          <source src={videoSrc} type="video/mp4" />
+          <source src={videoSrc} type={getVideoMimeType(videoSrc)} />
         </video>
         {/* Dark overlay for text contrast and premium feel */}
         <div className="absolute inset-0 bg-gradient-to-t from-surface via-surface/80 to-surface/50 z-10" />

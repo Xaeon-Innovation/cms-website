@@ -36,6 +36,12 @@ const envVideoUrls: HomeVideos = {
   eventsOrganising: process.env.NEXT_PUBLIC_VIDEO_EVENTS_ORGANISING_URL,
 };
 
+function getVideoMimeType(src: string) {
+  const cleanSrc = src.split("?")[0]?.toLowerCase() || "";
+  if (cleanSrc.endsWith(".webm")) return "video/webm";
+  return "video/mp4";
+}
+
 export function ServicesPreviewSection() {
   const [homeVideos, setHomeVideos] = useState<HomeVideos | null>(null);
 
@@ -93,6 +99,7 @@ export function ServicesPreviewSection() {
                 {svc.videoSrc && (
                   <>
                     <video 
+                      key={svc.videoSrc}
                       autoPlay 
                       loop 
                       muted 
@@ -100,7 +107,7 @@ export function ServicesPreviewSection() {
                       preload="metadata"
                       className="absolute inset-0 w-full h-full object-cover z-0 opacity-40 group-hover:opacity-70 transition-opacity duration-700"
                     >
-                      <source src={svc.videoSrc} type="video/mp4" />
+                      <source src={svc.videoSrc} type={getVideoMimeType(svc.videoSrc)} />
                     </video>
                     {/* Dark gradient to ensure text readability */}
                     <div className="absolute inset-0 bg-gradient-to-t from-surface-container-high via-surface-container-high/60 to-surface-container-high/10 z-0 pointer-events-none" />
