@@ -36,6 +36,7 @@ export default function AdminMediaPage() {
   const [error, setError] = useState<string | null>(null);
   const [urls, setUrls] = useState<HomeVideos>({});
   const [files, setFiles] = useState<Partial<Record<Slot["id"], File | null>>>({});
+  const [savedSizes, setSavedSizes] = useState<Partial<Record<Slot["id"], number | null>>>({});
 
   const refresh = async () => {
     setLoading(true);
@@ -50,6 +51,40 @@ export default function AdminMediaPage() {
   useEffect(() => {
     refresh();
   }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadSavedSizes() {
+      const entries = await Promise.all(
+        slots.map(async (slot) => {
+          const url = urls[slot.id];
+          if (!url) {
+            return [slot.id, null] as const;
+          }
+
+          try {
+            const response = await fetch(url, { method: "HEAD" });
+            const contentLength = response.headers.get("content-length");
+            const size = contentLength ? Number(contentLength) : null;
+            return [slot.id, Number.isFinite(size) ? size : null] as const;
+          } catch {
+            return [slot.id, null] as const;
+          }
+        })
+      );
+
+      if (!cancelled) {
+        setSavedSizes(Object.fromEntries(entries));
+      }
+    }
+
+    loadSavedSizes();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [urls]);
 
   function extFromFile(file: File) {
     const n = file.name.toLowerCase();
@@ -85,6 +120,27 @@ export default function AdminMediaPage() {
     }
 
     return "Failed to save media";
+  }
+
+  function formatBytes(bytes: number | null | undefined) {
+    if (bytes == null || Number.isNaN(bytes)) {
+      return "Unknown size";
+    }
+
+    if (bytes < 1024) {
+      return `${bytes} B`;
+    }
+
+    const units = ["KB", "MB", "GB"];
+    let value = bytes / 1024;
+    let unitIndex = 0;
+
+    while (value >= 1024 && unitIndex < units.length - 1) {
+      value /= 1024;
+      unitIndex += 1;
+    }
+
+    return `${value.toFixed(value >= 10 ? 0 : 1)} ${units[unitIndex]}`;
   }
 
   const uploadSlot = async (slotId: Slot["id"], file: File): Promise<UploadResult> => {
@@ -183,7 +239,22 @@ export default function AdminMediaPage() {
                 />
                 <div className="text-[10px] text-foreground/40 font-body">
                   Selected: {files[slot.id]?.name || "—"}
+                  {files[slot.id] ? ` (${formatBytes(files[slot.id]?.size)})` : ""}
                 </div>
+                {urls[slot.id] && (
+                  <div className="space-y-2">
+                    <div className="text-[10px] uppercase tracking-wide text-foreground/40 font-body">
+                      Saved preview ({formatBytes(savedSizes[slot.id])})
+                    </div>
+                    <video
+                      src={urls[slot.id]}
+                      controls
+                      preload="metadata"
+                      playsInline
+                      className="w-full max-w-xl rounded-sm border border-outline-variant/10 bg-black"
+                    />
+                  </div>
+                )}
               </div>
             ))}
 
