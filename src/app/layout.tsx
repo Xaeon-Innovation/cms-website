@@ -20,6 +20,7 @@ export const metadata: Metadata = {
 
 import { AuthProvider } from "@/context/AuthContext";
 import { BackToTopButton } from "@/components/layout/BackToTopButton";
+import { PageLoaderOverlay } from "@/components/layout/PageLoaderOverlay";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 
@@ -35,6 +36,7 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col pt-20">
         <AuthProvider>
+          <PageLoaderOverlay />
           <Navbar />
           <main className="flex-1">
             {children}
