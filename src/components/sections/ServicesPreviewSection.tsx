@@ -13,7 +13,6 @@ const servicesBase = [
     desc: "Dedicated marketing specialists for hospitals and clinics. We focus on increasing new patients, advertising your core services, and improving your brand's digital image.",
     tag: "Healthcare Growth",
     fallbackVideoSrc: "/assets/videos/Gold_particles_converging_202603292000.mp4",
-    env: "NEXT_PUBLIC_VIDEO_MEDICAL_MARKETING_URL",
   },
   {
     id: "digitalMarketing",
@@ -21,7 +20,6 @@ const servicesBase = [
     desc: "End-to-end online solutions including Google & Social Ads, custom application design, and comprehensive brand development to connect with your audience.",
     tag: "Online Presence",
     fallbackVideoSrc: "/assets/videos/Luminous_point_emitting_202603292002.mp4",
-    env: "NEXT_PUBLIC_VIDEO_DIGITAL_MARKETING_URL",
   },
   {
     id: "eventsOrganising",
@@ -29,9 +27,14 @@ const servicesBase = [
     desc: "Professional organization and flawless execution of medical exhibitions, conferences, and specialized courses to elevate your industry presence.",
     tag: "Professional Events",
     fallbackVideoSrc: "/assets/videos/Lines_forming_architectural_202603292002.mp4",
-    env: "NEXT_PUBLIC_VIDEO_EVENTS_ORGANISING_URL",
   },
 ] as const;
+
+const envVideoUrls: HomeVideos = {
+  medicalMarketing: process.env.NEXT_PUBLIC_VIDEO_MEDICAL_MARKETING_URL,
+  digitalMarketing: process.env.NEXT_PUBLIC_VIDEO_DIGITAL_MARKETING_URL,
+  eventsOrganising: process.env.NEXT_PUBLIC_VIDEO_EVENTS_ORGANISING_URL,
+};
 
 export function ServicesPreviewSection() {
   const [homeVideos, setHomeVideos] = useState<HomeVideos | null>(null);
@@ -52,8 +55,8 @@ export function ServicesPreviewSection() {
   }, []);
 
   const services = servicesBase.map((svc) => {
-    const envValue = (process.env as any)?.[svc.env] as string | undefined;
-    const fromDb = (homeVideos as any)?.[svc.id] as string | undefined;
+    const envValue = envVideoUrls[svc.id];
+    const fromDb = homeVideos?.[svc.id];
     return {
       ...svc,
       videoSrc: fromDb || envValue || svc.fallbackVideoSrc,

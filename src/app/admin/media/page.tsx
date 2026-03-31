@@ -12,6 +12,9 @@ type UploadResult = {
   pathname: string;
 };
 
+const MAX_VIDEO_SIZE_BYTES = 500 * 1024 * 1024;
+const ACCEPTED_VIDEO_TYPES = new Set(["video/mp4", "video/webm"]);
+
 type Slot = {
   id: keyof Required<HomeVideos>;
   label: string;
@@ -54,11 +57,41 @@ export default function AdminMediaPage() {
     return "mp4";
   }
 
+  function validateFile(file: File) {
+    const ext = extFromFile(file);
+    const expectedType = ext === "webm" ? "video/webm" : "video/mp4";
+
+    if (file.type && !ACCEPTED_VIDEO_TYPES.has(file.type)) {
+      throw new Error("Only MP4 and WebM videos are supported.");
+    }
+
+    if (file.size > MAX_VIDEO_SIZE_BYTES) {
+      throw new Error("Video is too large. Upload files up to 500 MB.");
+    }
+
+    return {
+      ext,
+      contentType: file.type || expectedType,
+    };
+  }
+
+  function getUploadErrorMessage(error: unknown) {
+    if (error instanceof Error && error.message) {
+      if (error.message.includes("BLOB_READ_WRITE_TOKEN")) {
+        return "Blob uploads are not configured in this Vercel environment. Add BLOB_READ_WRITE_TOKEN to the project settings.";
+      }
+
+      return error.message;
+    }
+
+    return "Failed to save media";
+  }
+
   const uploadSlot = async (slotId: Slot["id"], file: File): Promise<UploadResult> => {
     if (!user) throw new Error("Not signed in");
     const token = await user.getIdToken();
 
-    const ext = extFromFile(file);
+    const { ext, contentType } = validateFile(file);
     const pathname = `videos/home/${Date.now()}-${slotId}.${ext}`;
 
     // Use single-part upload (multipart: false). The MPU endpoint
@@ -67,7 +100,8 @@ export default function AdminMediaPage() {
       access: "public",
       handleUploadUrl: "/api/media/handle-upload",
       multipart: false,
-      contentType: file.type || (ext === "webm" ? "video/webm" : "video/mp4"),
+      contentType,
+      clientPayload: JSON.stringify({ slotId, contentType }),
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -93,8 +127,8 @@ export default function AdminMediaPage() {
       await updateHomeVideos(next);
       setFiles({});
       await refresh();
-    } catch (e: any) {
-      setError(e?.message || "Failed to save media");
+    } catch (error) {
+      setError(getUploadErrorMessage(error));
     } finally {
       setSaving(false);
     }
