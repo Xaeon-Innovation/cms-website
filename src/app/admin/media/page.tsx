@@ -199,7 +199,7 @@ export default function AdminMediaPage() {
         <div className="text-xs text-error p-3 bg-error-container/20 rounded-sm border border-error/20">{error}</div>
       )}
 
-      <div className="bg-surface-container rounded-sm border border-outline-variant/10 p-8 space-y-8">
+      <div className="bg-surface-container rounded-sm border border-outline-variant/10 p-6 sm:p-8 space-y-8">
         {loading ? (
           <div className="p-6 flex justify-center opacity-70">
             <div className="w-6 h-6 border-t-2 border-primary rounded-full animate-spin" />

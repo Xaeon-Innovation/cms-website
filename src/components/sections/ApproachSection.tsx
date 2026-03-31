@@ -27,22 +27,22 @@ const steps = [
 
 export function ApproachSection() {
   return (
-    <section className="py-32 bg-surface">
-      <div className="max-w-7xl mx-auto px-6">
+    <section className="py-20 md:py-32 bg-surface">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6">
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
-          className="text-center mb-24"
+          className="text-center mb-16 md:mb-24"
         >
-          <h2 className="text-4xl font-display font-medium text-primary">The Methodology</h2>
-          <p className="mt-4 text-foreground/70 font-body text-lg max-w-xl mx-auto">
+          <h2 className="text-3xl md:text-4xl font-display font-medium text-primary">The Methodology</h2>
+          <p className="mt-4 text-foreground/70 font-body text-base md:text-lg max-w-xl mx-auto">
             A systematic, data-driven approach to medical marketing that prioritizes sustainable growth over vanity metrics.
           </p>
         </motion.div>
 
-        <div className="space-y-12">
+        <div className="space-y-10 md:space-y-12">
           {steps.map((step, i) => (
             <motion.div
               key={i}
@@ -54,12 +54,12 @@ export function ApproachSection() {
                 i % 2 !== 0 ? "md:flex-row-reverse" : ""
               }`}
             >
-              <div className="w-full md:w-1/2 flex justify-center text-[10rem] font-display font-bold text-surface-container-high leading-none select-none">
+              <div className="w-full md:w-1/2 flex justify-center text-[5rem] sm:text-[7rem] md:text-[10rem] font-display font-bold text-surface-container-high leading-none select-none">
                 {step.num}
               </div>
               <div className="w-full md:w-1/2 space-y-4">
-                <h3 className="text-2xl font-display text-primary">{step.title}</h3>
-                <p className="text-foreground/70 font-body leading-relaxed text-lg">
+                <h3 className="text-xl sm:text-2xl font-display text-primary">{step.title}</h3>
+                <p className="text-foreground/70 font-body leading-relaxed text-base md:text-lg">
                   {step.des}
                 </p>
               </div>

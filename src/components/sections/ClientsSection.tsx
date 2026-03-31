@@ -129,11 +129,11 @@ export function ClientsSection() {
   }, [offsets]);
 
   return (
-    <section className="relative overflow-hidden bg-[#07100f] py-24 md:py-32">
+    <section className="relative overflow-hidden bg-[#07100f] py-20 md:py-32">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_75%_68%_at_50%_50%,rgba(21,51,48,0.95)_0%,rgba(10,25,24,0.94)_56%,rgba(7,15,14,1)_100%)]" />
       <div className="pointer-events-none absolute left-1/2 top-1/2 h-72 w-72 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(79,152,163,0.12)_0%,transparent_72%)] blur-xl md:h-96 md:w-96" />
 
-      <div className="relative mx-auto max-w-7xl px-6">
+      <div className="relative mx-auto max-w-7xl px-4 sm:px-6">
         <motion.div
           initial={{ opacity: 0, y: 36 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -144,7 +144,7 @@ export function ClientsSection() {
           <span className="inline-flex items-center gap-2 rounded-full border border-primary-fixed/15 bg-white/5 px-4 py-1.5 text-xs uppercase tracking-[0.28em] text-primary-fixed/70 backdrop-blur-sm">
             Our Clients
           </span>
-          <h2 className="mt-6 text-4xl font-display font-medium leading-tight text-[#ebe3d5] md:text-5xl">
+          <h2 className="mt-6 text-3xl sm:text-4xl font-display font-medium leading-tight text-[#ebe3d5] md:text-5xl">
             Brands We&apos;ve
             <br />
             Worked With

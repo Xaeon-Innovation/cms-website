@@ -35,14 +35,14 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="bg-surface pt-32 pb-24">
-      <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-16">
+    <div className="bg-surface pt-28 md:pt-32 pb-20 md:pb-24">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 grid grid-cols-1 lg:grid-cols-2 gap-10 md:gap-16">
         
         {/* Info Column */}
         <motion.div initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.8 }} className="space-y-12">
           <div className="space-y-4">
-            <h1 className="text-5xl font-display font-medium text-primary">Get in Touch</h1>
-            <p className="text-lg text-foreground/70 font-body">Ready to transform your patient acquisition? We bring the finest digital strategies directly to your clinic doors.</p>
+            <h1 className="text-4xl sm:text-5xl font-display font-medium text-primary">Get in Touch</h1>
+            <p className="text-base md:text-lg text-foreground/70 font-body">Ready to transform your patient acquisition? We bring the finest digital strategies directly to your clinic doors.</p>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
@@ -73,7 +73,7 @@ export default function ContactPage() {
 
         {/* Contact Form Column */}
         <motion.div initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.8, delay: 0.2 }}>
-           <div className="bg-surface-container p-8 md:p-12 rounded-sm border-t-2 border-primary-fixed shadow-2xl">
+           <div className="bg-surface-container p-6 sm:p-8 md:p-12 rounded-sm border-t-2 border-primary-fixed shadow-2xl">
              <h3 className="text-2xl font-display text-foreground mb-8">Direct Consultation Request</h3>
              
              {success ? (

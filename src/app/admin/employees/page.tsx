@@ -211,7 +211,7 @@ export default function AdminEmployeesPage() {
         <Badge variant="outline">{employees.length} total</Badge>
       </div>
 
-      <form onSubmit={onCreate} className="bg-surface-container rounded-sm border border-outline-variant/10 p-8 space-y-6">
+      <form onSubmit={onCreate} className="bg-surface-container rounded-sm border border-outline-variant/10 p-6 sm:p-8 space-y-6">
         {error && (
           <div className="text-xs text-error p-3 bg-error-container/20 rounded-sm border border-error/20">{error}</div>
         )}
@@ -266,7 +266,7 @@ export default function AdminEmployeesPage() {
         </div>
       </form>
 
-      <div className="bg-surface-container rounded-sm border border-outline-variant/10 p-8 space-y-6">
+      <div className="bg-surface-container rounded-sm border border-outline-variant/10 p-6 sm:p-8 space-y-6">
         <div className="flex items-start justify-between gap-6 flex-wrap">
           <div>
             <h2 className="text-xl font-display text-primary">Department Display Order</h2>
@@ -301,14 +301,14 @@ export default function AdminEmployeesPage() {
                 key={dept}
                 className="flex items-center justify-between gap-4 rounded-sm border border-outline-variant/10 bg-surface-container-low p-4"
               >
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3 min-w-0">
                   <span className="w-6 text-center text-xs text-foreground/40">
                     {index + 1}
                   </span>
-                  <span className="font-body text-sm text-foreground/85">{dept}</span>
+                  <span className="font-body text-sm text-foreground/85 break-words">{dept}</span>
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 shrink-0">
                   <Button
                     type="button"
                     variant="secondary"
@@ -334,13 +334,49 @@ export default function AdminEmployeesPage() {
         )}
       </div>
 
-      <div className="bg-surface-container rounded-sm border border-outline-variant/10 overflow-hidden">
+      <div className="space-y-4">
         {loading ? (
           <div className="p-12 flex justify-center">
             <div className="w-6 h-6 border-t-2 border-primary rounded-full animate-spin" />
           </div>
         ) : (
-          <div className="overflow-x-auto">
+          <>
+          <div className="md:hidden space-y-4">
+            {employees.map((emp) => (
+              <div key={emp.id} className="bg-surface-container rounded-sm border border-outline-variant/10 p-4 space-y-4">
+                <div className="flex items-center gap-4 min-w-0">
+                  <div className="size-12 rounded-full overflow-hidden bg-surface-container-low ring-1 ring-outline-variant/20 shrink-0">
+                    <Image
+                      src={emp.imageUrl}
+                      alt={emp.name}
+                      width={96}
+                      height={96}
+                      className="h-full w-full object-cover object-center grayscale"
+                    />
+                  </div>
+                  <div className="min-w-0">
+                    <div className="font-medium text-primary-container">{emp.name}</div>
+                    <div className="text-xs text-foreground/50 mt-1 break-all">{emp.imageUrl}</div>
+                  </div>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  <Badge variant="secondary" className="text-[10px]">
+                    {emp.department}
+                  </Badge>
+                  <span className="text-sm text-foreground/70">{emp.role}</span>
+                </div>
+                <Button type="button" variant="danger" size="sm" onClick={() => onDelete(emp)}>
+                  Delete
+                </Button>
+              </div>
+            ))}
+            {employees.length === 0 && (
+              <div className="text-center py-12 text-foreground/40 italic bg-surface-container rounded-sm border border-outline-variant/10">
+                No employees yet.
+              </div>
+            )}
+          </div>
+          <div className="hidden md:block bg-surface-container rounded-sm border border-outline-variant/10 overflow-x-auto">
             <table className="w-full text-left font-body text-sm">
               <thead className="bg-surface-container-high text-foreground/50 border-b border-outline-variant/10 text-xs uppercase tracking-widest">
                 <tr>
@@ -394,6 +430,7 @@ export default function AdminEmployeesPage() {
               </tbody>
             </table>
           </div>
+          </>
         )}
       </div>
     </div>

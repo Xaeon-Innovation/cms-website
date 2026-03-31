@@ -13,13 +13,13 @@ export function Footer() {
   }
 
   return (
-    <footer className="bg-surface-container-lowest mt-auto border-t border-outline-variant/20 pt-16 pb-8 relative overflow-hidden">
+    <footer className="bg-surface-container-lowest mt-auto border-t border-outline-variant/20 pt-12 md:pt-16 pb-8 relative overflow-hidden">
       
-      <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-12 relative z-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 grid grid-cols-1 md:grid-cols-4 gap-10 md:gap-12 relative z-10">
         
         <div className="space-y-4 col-span-1 md:col-span-2">
           <Link href="/" className="flex items-center">
-            <img src="/assets/longlogo.png" alt="Creative Multi Solutions" className="h-12 object-contain drop-shadow-[0_0_15px_rgba(232,197,131,0.15)]" />
+            <img src="/assets/longlogo.png" alt="Creative Multi Solutions" className="h-10 md:h-12 max-w-[220px] object-contain drop-shadow-[0_0_15px_rgba(232,197,131,0.15)]" />
           </Link>
           <p className="text-foreground/70 font-body max-w-sm mt-4 leading-relaxed">
             Creative Multi Solutions. We don't just market; we move people. Empowering high-end patient acquisition & humanitarian care.
@@ -50,9 +50,9 @@ export function Footer() {
         
       </div>
 
-      <div className="max-w-7xl mx-auto px-6 mt-16 pt-8 border-t border-outline-variant/10 flex flex-col md:flex-row justify-between items-center text-xs text-foreground/40 font-body transition-colors">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 mt-12 md:mt-16 pt-8 border-t border-outline-variant/10 flex flex-col gap-4 md:flex-row justify-between items-center text-center md:text-left text-xs text-foreground/40 font-body transition-colors">
         <p>© {new Date().getFullYear()} Creative Multi Solutions. All Rights Reserved.</p>
-        <div className="flex gap-4 mt-4 md:mt-0">
+        <div className="flex flex-wrap justify-center gap-4 md:mt-0">
           <Link href="/privacy" className="hover:text-primary">Privacy Policy</Link>
           <Link href="/terms" className="hover:text-primary">Terms of Service</Link>
         </div>

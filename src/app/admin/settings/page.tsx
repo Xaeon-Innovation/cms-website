@@ -116,7 +116,7 @@ export default function AdminSettingsPage() {
       </div>
 
       {/* TABS */}
-      <div className="flex space-x-2 border-b border-outline-variant/10 pb-4">
+      <div className="flex flex-wrap gap-2 border-b border-outline-variant/10 pb-4">
         <button 
           onClick={() => setActiveTab("platform")}
           className={`flex items-center gap-2 px-4 py-2 rounded-sm text-sm font-medium transition-all ${
@@ -141,7 +141,7 @@ export default function AdminSettingsPage() {
 
       {/* PLATFORM CONFIGURATION TAB */}
       {activeTab === "platform" && (
-        <form onSubmit={handleSaveConfig} className="bg-surface-container rounded-sm border border-outline-variant/10 p-8 space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+        <form onSubmit={handleSaveConfig} className="bg-surface-container rounded-sm border border-outline-variant/10 p-6 sm:p-8 space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
            <div className="space-y-4 max-w-xl">
              <div>
                <label className="text-xs font-body text-foreground/50 uppercase tracking-widest block mb-2">Public Phone Line</label>
@@ -170,7 +170,7 @@ export default function AdminSettingsPage() {
              </div>
            </div>
 
-           <div className="pt-4 flex items-center justify-between border-t border-outline-variant/10">
+           <div className="pt-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-t border-outline-variant/10">
              <Button type="submit" variant="primary" disabled={loadingConfig}>
                {loadingConfig ? "Saving Engine..." : "Save Configuration"}
              </Button>
@@ -184,7 +184,7 @@ export default function AdminSettingsPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
           
           {/* Create Admin Form */}
-          <div className="bg-surface-container rounded-sm border border-outline-variant/10 p-8">
+          <div className="bg-surface-container rounded-sm border border-outline-variant/10 p-6 sm:p-8">
             <div className="flex items-center gap-3 mb-6">
               <div className="w-10 h-10 rounded-sm bg-primary-container/20 flex items-center justify-center text-primary">
                 <Key className="w-5 h-5" />
@@ -223,7 +223,7 @@ export default function AdminSettingsPage() {
           </div>
 
           {/* Active Admins List */}
-          <div className="bg-surface-container rounded-sm border border-outline-variant/10 p-8 h-fit">
+          <div className="bg-surface-container rounded-sm border border-outline-variant/10 p-6 sm:p-8 h-fit">
             <div className="flex items-center gap-3 mb-6">
               <div className="w-10 h-10 rounded-sm bg-surface-container-high flex items-center justify-center text-foreground/70">
                 <Users className="w-5 h-5" />
@@ -241,7 +241,7 @@ export default function AdminSettingsPage() {
             ) : (
               <div className="space-y-3">
                 {admins.map((admin) => (
-                  <div key={admin.id} className="flex items-center justify-between p-3 rounded-sm bg-surface shadow-sm border border-outline-variant/10 grouphover:border-primary/20 transition-all">
+                  <div key={admin.id} className="flex items-center justify-between gap-3 p-3 rounded-sm bg-surface shadow-sm border border-outline-variant/10 grouphover:border-primary/20 transition-all">
                     <div>
                       <div className="text-sm font-medium text-foreground/90">{admin.email}</div>
                       <div className="text-xs text-foreground/40 mt-1">

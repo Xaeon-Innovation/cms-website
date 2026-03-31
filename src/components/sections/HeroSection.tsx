@@ -64,21 +64,21 @@ export function HeroSection() {
         <div className="absolute inset-0 bg-gradient-to-t from-surface via-surface/80 to-surface/50 z-10" />
       </div>
 
-      <div className="relative z-10 max-w-7xl mx-auto px-6 flex flex-col items-center text-center">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 flex flex-col items-center text-center">
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: "easeOut" }}
           className="space-y-6"
         >
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full glass ghost-border mb-4">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full glass ghost-border mb-4 max-w-full">
             <span className="w-2 h-2 rounded-full bg-primary-fixed" />
-            <span className="text-sm font-body text-primary-fixed uppercase tracking-wider">Creative Multi Solutions</span>
+            <span className="text-xs sm:text-sm font-body text-primary-fixed uppercase tracking-wider">Creative Multi Solutions</span>
           </div>
           
-          <h1 className="text-5xl md:text-7xl font-display font-medium text-foreground leading-[1.1] max-w-4xl">
+          <h1 className="text-4xl sm:text-5xl md:text-7xl font-display font-medium text-foreground leading-[1.1] max-w-4xl">
             Where Clinics Find{" "}
-            <span className="text-primary inline-block min-w-[280px]">
+            <span className="text-primary inline-block min-w-[180px] sm:min-w-[220px] md:min-w-[280px]">
               <motion.span
                 key={index}
                 initial={{ opacity: 0, y: 20 }}
@@ -93,17 +93,17 @@ export function HeroSection() {
             Where Patients Find Care.
           </h1>
 
-          <p className="text-lg md:text-xl text-foreground/70 font-body max-w-2xl mx-auto mt-6 leading-relaxed">
+          <p className="text-base md:text-xl text-foreground/70 font-body max-w-2xl mx-auto mt-6 leading-relaxed">
             Bridging the gap between specialized healthcare and those who seek it most. We curate journeys of clinical perfection.
           </p>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-12 pt-8">
-            <Link href="/contact">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-10 pt-4 sm:pt-8 w-full">
+            <Link href="/contact" className="w-full sm:w-auto">
               <Button size="lg" variant="primary" className="w-full sm:w-auto">
                 Start Acquiring Patients
               </Button>
             </Link>
-            <Link href="/mobadra">
+            <Link href="/mobadra" className="w-full sm:w-auto">
               <Button size="lg" variant="secondary" className="w-full sm:w-auto">
                 Discover Mobadra
               </Button>

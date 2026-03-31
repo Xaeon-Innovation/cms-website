@@ -1,9 +1,10 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
-import { LayoutDashboard, Users, HeartHandshake, MessageSquare, Settings, LogOut } from "lucide-react";
+import { LayoutDashboard, Users, HeartHandshake, MessageSquare, Settings, LogOut, Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const menuItems = [
@@ -16,12 +17,16 @@ const menuItems = [
   { href: "/admin/settings", label: "Platform Settings", icon: Settings },
 ];
 
-export function AdminSidebar() {
+type AdminSidebarProps = {
+  mobile?: boolean;
+};
+
+export function AdminSidebar({ mobile = false }: AdminSidebarProps) {
   const pathname = usePathname();
   const { signOut, user } = useAuth();
 
   return (
-    <div className="w-64 bg-surface-container-low min-h-screen flex flex-col border-r border-outline-variant/10">
+    <div className={cn("bg-surface-container-low flex flex-col border-outline-variant/10", mobile ? "min-h-full" : "w-64 min-h-screen border-r")}>
       <div className="h-20 flex items-center px-6 border-b border-outline-variant/10">
         <div className="w-8 h-8 rounded-sm bg-primary-fixed flex items-center justify-center text-on-primary-fixed font-bold text-[10px] mr-3">
           CMS
@@ -66,6 +71,31 @@ export function AdminSidebar() {
           Secure Logout
         </button>
       </div>
+    </div>
+  );
+}
+
+export function AdminMobileNav() {
+  const [isOpen, setIsOpen] = useState(false);
+  const pathname = usePathname();
+
+  return (
+    <div className="md:hidden">
+      <button
+        type="button"
+        onClick={() => setIsOpen((current) => !current)}
+        className="inline-flex items-center gap-2 rounded-sm border border-outline-variant/20 bg-surface-container px-3 py-2 text-sm text-foreground/80"
+        aria-label={isOpen ? "Close admin navigation" : "Open admin navigation"}
+      >
+        {isOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
+        <span>{pathname?.split("/").filter(Boolean).pop() || "Menu"}</span>
+      </button>
+
+      {isOpen && (
+        <div className="absolute left-4 right-4 top-[4.75rem] z-40 overflow-hidden rounded-sm border border-outline-variant/10 shadow-2xl">
+          <AdminSidebar mobile />
+        </div>
+      )}
     </div>
   );
 }

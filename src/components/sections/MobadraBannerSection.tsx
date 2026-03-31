@@ -7,13 +7,13 @@ import { HeartPulse, CheckCircle2 } from "lucide-react";
 
 export function MobadraBannerSection() {
   return (
-    <section className="relative py-32 bg-surface-container-lowest overflow-hidden border-y border-outline-variant/20">
+    <section className="relative py-20 md:py-32 bg-surface-container-lowest overflow-hidden border-y border-outline-variant/20">
       
       {/* Background Effect */}
-      <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-secondary-container/10 rounded-full blur-[100px] translate-x-1/3 -translate-y-1/3 pointer-events-none" />
+      <div className="absolute top-0 right-0 w-[320px] h-[320px] sm:w-[500px] sm:h-[500px] md:w-[800px] md:h-[800px] bg-secondary-container/10 rounded-full blur-[100px] translate-x-1/3 -translate-y-1/3 pointer-events-none" />
 
-      <div className="max-w-7xl mx-auto px-6 relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 relative z-10">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 md:gap-16 items-center">
           
           <motion.div
             initial={{ opacity: 0, y: 40 }}
@@ -24,17 +24,17 @@ export function MobadraBannerSection() {
           >
             <div className="inline-flex flex-col items-start gap-2">
               <span className="text-xl font-bold text-primary/80">Creative Mobadra</span>
-              <h2 className="text-4xl md:text-5xl font-display font-medium text-foreground">
+              <h2 className="text-3xl md:text-5xl font-display font-medium text-foreground">
                 Because Every Patient Deserves More Than A Diagnosis.
               </h2>
             </div>
             
-            <p className="text-lg text-foreground/80 font-body leading-relaxed">
+            <p className="text-base md:text-lg text-foreground/80 font-body leading-relaxed">
               The Mobadra Initiative is our humanitarian core. We bridge patients with critical care needs to top-tier hospitals, offering comprehensive support from transportation to post-treatment follow-ups—completely free of charge.
             </p>
 
-            <Link href="/mobadra" className="inline-block mt-4">
-              <Button size="lg" variant="primary">
+            <Link href="/mobadra" className="inline-block mt-4 w-full sm:w-auto">
+              <Button size="lg" variant="primary" className="w-full sm:w-auto">
                 Join The Initiative <HeartPulse className="ml-2 w-5 h-5"/>
               </Button>
             </Link>

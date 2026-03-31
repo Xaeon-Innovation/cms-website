@@ -1,7 +1,7 @@
 "use client";
 
 import AdminGuard from "@/components/admin/AdminGuard";
-import { AdminSidebar } from "@/components/admin/AdminSidebar";
+import { AdminMobileNav, AdminSidebar } from "@/components/admin/AdminSidebar";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -15,11 +15,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         
         {/* Main Content Area */}
         <div className="flex-1 flex flex-col min-h-screen min-w-0">
-          <header className="h-20 bg-surface-container-low border-b border-outline-variant/10 flex items-center px-8 z-10 sticky top-0 backdrop-blur-md">
-             <h2 className="font-display text-primary text-xl">CMS Admin Portal</h2>
+          <header className="h-20 bg-surface-container-low border-b border-outline-variant/10 flex items-center justify-between px-4 sm:px-6 md:px-8 gap-4 z-10 sticky top-0 backdrop-blur-md">
+             <h2 className="font-display text-primary text-lg sm:text-xl">CMS Admin Portal</h2>
+             <AdminMobileNav />
           </header>
           
-          <main className="flex-1 p-8">
+          <main className="flex-1 p-4 sm:p-6 md:p-8">
             <div className="max-w-6xl mx-auto">
               {children}
             </div>

@@ -70,8 +70,8 @@ export function ServicesPreviewSection() {
   });
 
   return (
-    <section className="py-32 bg-surface">
-      <div className="max-w-7xl mx-auto px-6 space-y-16">
+    <section className="py-20 md:py-32 bg-surface">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 space-y-12 md:space-y-16">
         
         <motion.div
           initial={{ opacity: 0, y: 40 }}
@@ -80,13 +80,13 @@ export function ServicesPreviewSection() {
           transition={{ duration: 0.6 }}
           className="text-center max-w-2xl mx-auto space-y-4"
         >
-          <h2 className="text-4xl font-display font-medium text-primary">Precision Expertise</h2>
-          <p className="text-foreground/70 font-body text-lg">
+          <h2 className="text-3xl md:text-4xl font-display font-medium text-primary">Precision Expertise</h2>
+          <p className="text-foreground/70 font-body text-base md:text-lg">
             A bespoke suite of solutions tailored for medical institutions that refuse to compromise on quality.
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
           {services.map((svc, i) => (
             <motion.div
               key={i}
@@ -95,7 +95,7 @@ export function ServicesPreviewSection() {
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: i * 0.1 }}
             >
-              <Card className="h-full min-h-[420px] hover:-translate-y-2 transition-transform duration-500 overflow-hidden relative group border-outline-variant/20 shadow-xl">
+              <Card className="h-full min-h-[340px] md:min-h-[420px] hover:-translate-y-2 transition-transform duration-500 overflow-hidden relative group border-outline-variant/20 shadow-xl">
                 {svc.videoSrc && (
                   <>
                     <video 

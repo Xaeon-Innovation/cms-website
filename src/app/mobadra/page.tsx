@@ -40,9 +40,9 @@ export default function MobadraPage() {
   };
 
   return (
-    <div className="bg-surface pt-32 pb-24">
+    <div className="bg-surface pt-28 md:pt-32 pb-20 md:pb-24">
       {/* Hero */}
-      <section className="max-w-7xl mx-auto px-6 mb-24 relative text-center">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 mb-20 md:mb-24 relative text-center">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
@@ -53,17 +53,17 @@ export default function MobadraPage() {
              <Badge className="font-arabic">مبادرة</Badge>
              <Badge variant="outline">Social Responsibility</Badge>
           </div>
-          <h1 className="text-5xl md:text-6xl font-display font-medium text-primary">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-display font-medium text-primary">
             Because Every Patient Deserves More Than a Diagnosis.
           </h1>
-          <p className="text-lg md:text-xl text-foreground/70 font-body leading-relaxed">
+          <p className="text-base md:text-xl text-foreground/70 font-body leading-relaxed">
             Our humanitarian initiative connects critical cases with comprehensive healthcare coordination, entirely free of charge.
           </p>
         </motion.div>
       </section>
 
       {/* Services Grid */}
-      <section className="bg-surface-container-low py-24 mb-24 max-w-7xl mx-auto px-6 rounded-sm">
+      <section className="bg-surface-container-low py-16 md:py-24 mb-20 md:mb-24 max-w-7xl mx-auto px-4 sm:px-6 rounded-sm">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {[
             { title: "Free Transportation", desc: "Safe transit to and from the hospital." },
@@ -82,8 +82,8 @@ export default function MobadraPage() {
       </section>
 
       {/* Application Form */}
-      <section className="max-w-3xl mx-auto px-6">
-        <div className="p-8 md:p-12 bg-surface-container-highest rounded-sm">
+      <section className="max-w-3xl mx-auto px-4 sm:px-6">
+        <div className="p-6 sm:p-8 md:p-12 bg-surface-container-highest rounded-sm">
           <div className="mb-8 text-center">
             <h2 className="text-3xl font-display text-primary mb-2">Request Coordination</h2>
             <p className="text-foreground/70 font-body">Submit details for yourself or a loved one in need.</p>

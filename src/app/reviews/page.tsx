@@ -52,10 +52,10 @@ export default function ReviewsPage() {
   };
 
   return (
-    <div className="bg-surface pt-32 pb-24">
+    <div className="bg-surface pt-28 md:pt-32 pb-20 md:pb-24">
       {/* Hero */}
-      <section className="max-w-7xl mx-auto px-6 mb-16 text-center">
-        <h1 className="text-5xl font-display font-medium text-primary-fixed mb-6">Patient Success Stories</h1>
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 mb-16 text-center">
+        <h1 className="text-4xl sm:text-5xl font-display font-medium text-primary-fixed mb-6">Patient Success Stories</h1>
         
         {/* Filter Tabs */}
         <div className="flex flex-wrap justify-center gap-4 mt-8">
@@ -76,7 +76,7 @@ export default function ReviewsPage() {
       </section>
 
       {/* Masonry-style Grid */}
-      <section className="max-w-7xl mx-auto px-6 mb-32 min-h-[400px]">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 mb-24 md:mb-32 min-h-[400px]">
         {loading ? (
           <div className="flex justify-center p-12">
             <div className="w-8 h-8 rounded-full border-t border-primary animate-spin" />
@@ -110,8 +110,8 @@ export default function ReviewsPage() {
       </section>
 
       {/* Submission Form */}
-      <section className="max-w-2xl mx-auto px-6">
-         <div className="glass p-8 md:p-12 ghost-border rounded-sm">
+      <section className="max-w-2xl mx-auto px-4 sm:px-6">
+         <div className="glass p-6 sm:p-8 md:p-12 ghost-border rounded-sm">
            <h3 className="text-2xl font-display text-primary mb-6 text-center">Share Your Experience</h3>
            
            {success ? (
@@ -124,15 +124,15 @@ export default function ReviewsPage() {
              <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                <Input placeholder="Your Name or Clinic Name" error={!!errors.name} {...register("name")} />
                
-               <div className="grid grid-cols-2 gap-4">
+               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                  <select className="bg-surface-container-low h-12 px-4 border-b border-transparent focus:border-primary font-body text-foreground outline-none" {...register("type")}>
                    <option value="patient">Patient Care</option>
                    <option value="clinic">Clinic Acquisition</option>
                    <option value="mobadra">Mobadra Initiative</option>
                  </select>
                  
-                 <div className="flex items-center justify-end gap-2 bg-surface-container-low px-4 border-b border-transparent">
-                   <span className="text-xs text-foreground/50 mr-2">Rating</span>
+                 <div className="flex items-center justify-between sm:justify-end gap-2 bg-surface-container-low px-4 min-h-12 border-b border-transparent">
+                   <span className="text-xs text-foreground/50 mr-2 shrink-0">Rating</span>
                    {[1,2,3,4,5].map(star => (
                      <button type="button" key={star} onClick={() => setValue('rating', star)} className={`text-xl ${currentRating >= star ? 'text-primary' : 'text-outline-variant'}`}>
                        ★

@@ -37,7 +37,7 @@ export default function AdminReviewsPage() {
         </div>
       </div>
 
-      <div className="flex space-x-4 mb-4 border-b border-outline-variant/10 pb-4">
+      <div className="flex flex-wrap gap-3 mb-4 border-b border-outline-variant/10 pb-4">
         <button 
           onClick={() => setTab('pending')}
           className={`font-body text-sm pb-1 ${tab === 'pending' ? 'text-primary border-b border-primary' : 'text-foreground/50 hover:text-foreground'}`}
@@ -59,9 +59,9 @@ export default function AdminReviewsPage() {
              <div className="p-12 text-center text-foreground/40 italic font-body bg-surface-container rounded-sm border border-outline-variant/10">No {tab} reviews found.</div>
          ) : (
              reviews.map((rev) => (
-               <div key={rev.id} className="bg-surface-container rounded-sm border border-outline-variant/10 p-6 flex flex-col md:flex-row gap-6 justify-between items-start">
+               <div key={rev.id} className="bg-surface-container rounded-sm border border-outline-variant/10 p-4 sm:p-6 flex flex-col md:flex-row gap-6 justify-between items-start">
                   <div className="space-y-4">
-                     <div className="flex items-center gap-3">
+                     <div className="flex flex-wrap items-center gap-3">
                         <span className="font-display text-primary-container text-lg">{rev.name}</span>
                         <Badge variant="secondary" className="text-[10px]">{rev.type}</Badge>
                         <span className="text-primary-fixed text-sm">{'★'.repeat(rev.rating)}</span>
@@ -70,7 +70,7 @@ export default function AdminReviewsPage() {
                   </div>
                   
                   {tab === 'pending' && (
-                     <div className="flex md:flex-col gap-2 shrink-0">
+                     <div className="flex flex-col sm:flex-row md:flex-col gap-2 shrink-0 w-full md:w-auto">
                         <Button variant="primary" size="sm" onClick={() => processReview(rev.id!, 'approved')}>Approve (Publish)</Button>
                         <Button variant="ghost" className="text-error hover:text-error hover:bg-error-container/10" size="sm" onClick={() => processReview(rev.id!, 'rejected')}>Reject (Trash)</Button>
                      </div>

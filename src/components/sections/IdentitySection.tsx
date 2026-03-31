@@ -50,7 +50,7 @@ function AnimatedStat({ label, target, suffix = "" }: AnimatedStatProps) {
   }, [inView, target]);
 
   return (
-    <div ref={ref} className="glass ghost-border rounded-sm p-8 space-y-2">
+    <div ref={ref} className="glass ghost-border rounded-sm p-5 sm:p-6 md:p-8 space-y-2">
       <div className="text-3xl font-display text-primary md:text-4xl">
         {count.toLocaleString()}
         {suffix}
@@ -64,9 +64,9 @@ function AnimatedStat({ label, target, suffix = "" }: AnimatedStatProps) {
 
 export function IdentitySection() {
   return (
-    <section className="py-32 bg-surface-container-low relative overflow-hidden">
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+    <section className="py-20 md:py-32 bg-surface-container-low relative overflow-hidden">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 md:gap-16 items-center">
           
           <motion.div
             initial={{ opacity: 0, x: -40 }}
@@ -75,11 +75,11 @@ export function IdentitySection() {
             transition={{ duration: 0.8 }}
             className="space-y-8"
           >
-            <h2 className="text-4xl md:text-5xl font-display font-medium text-primary">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-display font-medium text-primary">
               We Don't Just Market. <br/>
               <span className="text-foreground">We Move People.</span>
             </h2>
-            <p className="text-lg text-foreground/70 font-body leading-relaxed max-w-lg">
+            <p className="text-base md:text-lg text-foreground/70 font-body leading-relaxed max-w-lg">
               Medical marketing is built on authority. Our editorial approach crafts a narrative of excellence that resonates with high-value patient demographics, ensuring your practice is discovered by those who value clinical mastery.
             </p>
           </motion.div>
@@ -89,7 +89,7 @@ export function IdentitySection() {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.8, delay: 0.2 }}
-            className="grid grid-cols-2 gap-6"
+            className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6"
           >
             {[
               { label: "Partner Health Centers", target: 10, suffix: "+" },

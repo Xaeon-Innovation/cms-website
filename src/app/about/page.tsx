@@ -80,9 +80,9 @@ export default function AboutPage() {
   }, [departmentOrder, employees]);
 
   return (
-    <div className="bg-surface pt-32 pb-24">
+    <div className="bg-surface pt-28 md:pt-32 pb-20 md:pb-24">
       {/* Hero */}
-      <section className="max-w-7xl mx-auto px-6 mb-32 relative text-center">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 mb-24 md:mb-32 relative text-center">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
@@ -90,8 +90,8 @@ export default function AboutPage() {
           className="max-w-3xl mx-auto space-y-6"
         >
           <Badge className="mb-4">Our Identity</Badge>
-          <h1 className="text-5xl md:text-6xl font-display font-medium text-primary">Creative Multi Solutions</h1>
-          <p className="text-lg md:text-xl text-foreground/70 font-body leading-relaxed">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-display font-medium text-primary">Creative Multi Solutions</h1>
+          <p className="text-base md:text-xl text-foreground/70 font-body leading-relaxed">
             We exist at the intersection of medical science and human emotion. By curating clinical excellence, we guide patients to top-tier healthcare professionals.
           </p>
         </motion.div>
@@ -99,7 +99,7 @@ export default function AboutPage() {
 
       {/* Who We Are */}
       <section className="bg-surface-container py-24 mb-32">
-        <div className="max-w-7xl mx-auto px-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <motion.div
             initial={{ opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -119,7 +119,7 @@ export default function AboutPage() {
       </section>
 
       {/* Team Values / Dual Mission */}
-      <section className="max-w-7xl mx-auto px-6">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6">
         <div className="text-center mb-16">
           <h2 className="text-4xl font-display font-medium text-primary">Core Values</h2>
         </div>
@@ -148,7 +148,7 @@ export default function AboutPage() {
       </section>
 
       {/* Employees */}
-      <section className="max-w-7xl mx-auto px-6 mt-28">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 mt-20 md:mt-28">
         <div className="text-center mb-16">
           <h2 className="text-4xl font-display font-medium text-primary">Our Team</h2>
           <p className="mt-4 text-foreground/70 font-body">The people behind the work.</p>
@@ -175,7 +175,7 @@ export default function AboutPage() {
               >
                 <h3 className="text-2xl md:text-3xl font-display text-primary-container">{group.groupName}</h3>
 
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5 justify-items-center">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 justify-items-center">
                   {group.employees.map((emp) => (
                     <Card
                       key={`${group.groupName}-${emp.id || emp.name}`}

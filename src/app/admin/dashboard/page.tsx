@@ -69,13 +69,13 @@ export default function AdminDashboardPage() {
   }
 
   return (
-    <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
+    <div className="space-y-8 md:space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
       
       {/* Header section */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
           <Badge className="mb-3"><Activity className="w-3 h-3 mr-1 inline-block" /> Live Telemetry</Badge>
-          <h1 className="text-4xl font-display text-primary tracking-tight">Command Center</h1>
+          <h1 className="text-3xl sm:text-4xl font-display text-primary tracking-tight">Command Center</h1>
           <p className="text-foreground/70 font-body text-sm mt-2 max-w-xl">
             Real-time operations matrix monitoring acquisition pipelines, humanitarian requests, and global platform health.
           </p>
@@ -103,7 +103,7 @@ export default function AdminDashboardPage() {
               
               <div className="relative z-10">
                 <h4 className="text-xs font-body text-foreground/50 uppercase tracking-widest">{card.title}</h4>
-                <div className="text-5xl font-display font-medium text-foreground mt-2">{card.value}</div>
+                <div className="text-4xl sm:text-5xl font-display font-medium text-foreground mt-2">{card.value}</div>
                 <div className="flex items-center gap-2 mt-4 text-xs font-body">
                    <span className="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
                    <span className="text-foreground/60">{card.desc}</span>
@@ -131,7 +131,7 @@ export default function AdminDashboardPage() {
           
           <div className="bg-surface-container border border-outline-variant/10 rounded-lg overflow-hidden flex flex-col">
             {recentLeads.length > 0 ? recentLeads.map((lead) => (
-              <div key={lead.id} className="p-4 border-b border-outline-variant/5 last:border-0 hover:bg-surface-container-high transition-colors flex items-center justify-between">
+              <div key={lead.id} className="p-4 border-b border-outline-variant/5 last:border-0 hover:bg-surface-container-high transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                  <div>
                     <div className="font-body text-sm text-foreground/90 font-medium">{lead.name}</div>
                     <div className="text-xs text-foreground/50 mt-1">{lead.service}</div>
@@ -165,7 +165,7 @@ export default function AdminDashboardPage() {
           
           <div className="bg-surface-container border border-outline-variant/10 rounded-lg overflow-hidden flex flex-col">
             {recentMobadra.length > 0 ? recentMobadra.map((req) => (
-              <div key={req.id} className="p-4 border-b border-outline-variant/5 last:border-0 hover:bg-surface-container-high transition-colors flex items-center justify-between">
+              <div key={req.id} className="p-4 border-b border-outline-variant/5 last:border-0 hover:bg-surface-container-high transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                  <div>
                     <div className="font-body text-sm text-foreground/90 font-medium">{req.fullName}</div>
                     <div className="text-xs text-foreground/50 mt-1 max-w-[200px] truncate">{req.condition}</div>

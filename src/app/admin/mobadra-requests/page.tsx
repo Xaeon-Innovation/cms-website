@@ -36,7 +36,7 @@ export default function AdminMobadraPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center mb-8">
+      <div className="flex justify-between items-center gap-4 flex-wrap mb-8">
         <div>
            <Badge className="font-arabic mb-2 bg-primary text-on-primary">مبادرة</Badge>
            <h1 className="text-3xl font-display text-primary">Humanitarian Coordination</h1>
@@ -45,11 +45,48 @@ export default function AdminMobadraPage() {
         <Badge variant="outline">{requests.length} Requests</Badge>
       </div>
 
-      <div className="bg-surface-container rounded-sm border border-outline-variant/10 overflow-hidden">
+      <div className="space-y-4">
         {loading ? (
           <div className="p-12 flex justify-center"><div className="w-6 h-6 border-t-2 border-primary rounded-full animate-spin"></div></div>
         ) : (
-          <div className="overflow-x-auto">
+          <>
+          <div className="md:hidden space-y-4">
+            {requests.map((req) => (
+              <div key={req.id} className="bg-surface-container rounded-sm border border-outline-variant/10 p-4 space-y-4">
+                <div>
+                  <div className="font-medium text-primary-fixed">{req.name}</div>
+                  <div className="text-foreground/60 text-xs mt-1">{req.phone}</div>
+                </div>
+                <div className="space-y-1 text-sm text-foreground/80">
+                  <div><span className="text-foreground/40 text-xs mr-2 uppercase tracking-wide">City</span>{req.city}</div>
+                  <div><span className="text-foreground/40 text-xs mr-2 uppercase tracking-wide">Target</span>{req.hospitalNeeded}</div>
+                </div>
+                <div>
+                  <Badge 
+                    variant={req.status === 'pending' ? 'danger' : req.status === 'assigned' ? 'secondary' : 'success'}
+                    className="text-[10px] lowercase mb-2 block w-fit"
+                  >
+                    {req.status}
+                  </Badge>
+                  {req.assignedCoordinator && (
+                    <div className="text-xs text-primary-container">{req.assignedCoordinator}</div>
+                  )}
+                </div>
+                <div className="flex flex-col sm:flex-row gap-2">
+                  {req.status === 'pending' && (
+                    <Button variant="secondary" size="sm" onClick={() => handleAssign(req.id!)}>Assign</Button>
+                  )}
+                  {req.status === 'assigned' && (
+                    <Button variant="primary" size="sm" onClick={() => handleComplete(req.id!)}>Complete</Button>
+                  )}
+                </div>
+              </div>
+            ))}
+            {requests.length === 0 && (
+              <div className="text-center py-12 text-foreground/40 italic bg-surface-container rounded-sm border border-outline-variant/10">No Mobadra requests pending.</div>
+            )}
+          </div>
+          <div className="hidden md:block bg-surface-container rounded-sm border border-outline-variant/10 overflow-x-auto">
             <table className="w-full text-left font-body text-sm">
               <thead className="bg-surface-container-high text-foreground/50 border-b border-outline-variant/10 text-xs uppercase tracking-widest">
                 <tr>
@@ -97,6 +134,7 @@ export default function AdminMobadraPage() {
               </tbody>
             </table>
           </div>
+          </>
         )}
       </div>
     </div>
