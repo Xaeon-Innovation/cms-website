@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { getMediaSettings } from "@/lib/firestore/media";
 
-const words = ["Growth", "Acquisition", "Excellence", "Patients"];
+const words = ["Visibility", "Authority", "Growth", "Patients"];
 const HERO_VIDEO_FALLBACK = "/assets/videos/13820343_3840_2160_30fps.mp4";
 
 function getVideoMimeType(src: string) {
@@ -77,7 +77,7 @@ export function HeroSection() {
           </div>
           
           <h1 className="text-4xl sm:text-5xl md:text-7xl font-display font-medium text-foreground leading-[1.1] max-w-4xl">
-            Where Clinics Find{" "}
+            Marketing That Builds{" "}
             <span className="text-primary inline-block min-w-[180px] sm:min-w-[220px] md:min-w-[280px]">
               <motion.span
                 key={index}
@@ -90,11 +90,12 @@ export function HeroSection() {
               </motion.span>
             </span>
             <br />
-            Where Patients Find Care.
+            And Brings Patients Closer.
           </h1>
 
           <p className="text-base md:text-xl text-foreground/70 font-body max-w-2xl mx-auto mt-6 leading-relaxed">
-            Bridging the gap between specialized healthcare and those who seek it most. We curate journeys of clinical perfection.
+            We help brands strengthen their presence, earn trust, and grow with
+            strategies specialized in medical marketing.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-10 pt-4 sm:pt-8 w-full">
