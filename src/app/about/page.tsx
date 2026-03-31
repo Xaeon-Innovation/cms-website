@@ -78,38 +78,24 @@ export default function AboutPage() {
         </motion.div>
       </section>
 
-      {/* Story Timeline */}
+      {/* Who We Are */}
       <section className="bg-surface-container py-24 mb-32">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-display font-medium text-primary">Our Story</h2>
-            <p className="mt-4 text-foreground/70">A legacy of bridging healthcare gaps.</p>
-          </div>
-          
-          <div className="space-y-12">
-            {[
-              { year: "2018", title: "The Foundation", desc: "Recognized the disconnect between high-end clinics and patient discovery." },
-              { year: "2020", title: "Digital Authority", desc: "Launched proprietary acquisition funnels for specialized surgery." },
-              { year: "2023", title: "Mobadra Initiative", desc: "Expanded our mission to include free humanitarian patient care coordination." }
-            ].map((item, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, x: -20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: i * 0.1 }}
-                className="flex flex-col md:flex-row gap-6 md:gap-12 items-start"
-              >
-                <div className="text-4xl font-display font-bold text-surface-bright/50 select-none w-32 shrink-0 border-r border-outline-variant/20">
-                  {item.year}
-                </div>
-                <div className="space-y-2">
-                  <h3 className="text-2xl font-display text-primary-container">{item.title}</h3>
-                  <p className="text-foreground/70 leading-relaxed font-body text-lg max-w-2xl">{item.desc}</p>
-                </div>
-              </motion.div>
-            ))}
-          </div>
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.7 }}
+            className="mx-auto max-w-4xl text-center"
+          >
+            <h2 className="text-4xl font-display font-medium text-primary">Who We Are</h2>
+            <p className="mt-6 text-lg leading-relaxed text-foreground/70 font-body md:text-xl">
+              We are Creative Multi Solutions, the first company in the Emirates
+              that provides the best marketing services and brand advertising. We
+              achieve goals. We care about establishing, growing and developing
+              companies.
+            </p>
+          </motion.div>
         </div>
       </section>
 

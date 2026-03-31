@@ -43,7 +43,10 @@ export function HeroSection() {
   }, []);
 
   return (
-    <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden bg-surface pt-20">
+    <section
+      id="hero"
+      className="relative min-h-[90vh] flex items-center justify-center overflow-hidden bg-surface pt-20"
+    >
       {/* Background Video */}
       <div className="absolute inset-0 w-full h-full overflow-hidden">
         <video 

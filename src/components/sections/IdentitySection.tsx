@@ -1,6 +1,66 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
+
+type AnimatedStatProps = {
+  label: string;
+  target: number;
+  suffix?: string;
+};
+
+function AnimatedStat({ label, target, suffix = "" }: AnimatedStatProps) {
+  const [count, setCount] = useState(0);
+  const ref = useRef<HTMLDivElement>(null);
+  const [inView, setInView] = useState(false);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setInView(true);
+        }
+      },
+      { threshold: 0.35 }
+    );
+
+    if (ref.current) observer.observe(ref.current);
+
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!inView) return;
+
+    let start = 0;
+    const duration = 1800;
+    const increment = target / (duration / 16);
+    const timer = window.setInterval(() => {
+      start += increment;
+
+      if (start >= target) {
+        setCount(target);
+        window.clearInterval(timer);
+      } else {
+        setCount(Math.ceil(start));
+      }
+    }, 16);
+
+    return () => window.clearInterval(timer);
+  }, [inView, target]);
+
+  return (
+    <div ref={ref} className="glass ghost-border rounded-sm p-8 space-y-2">
+      <div className="text-3xl font-display text-primary md:text-4xl">
+        {count.toLocaleString()}
+        {suffix}
+      </div>
+      <div className="text-sm font-body uppercase tracking-wider text-foreground/60">
+        {label}
+      </div>
+    </div>
+  );
+}
 
 export function IdentitySection() {
   return (
@@ -32,15 +92,17 @@ export function IdentitySection() {
             className="grid grid-cols-2 gap-6"
           >
             {[
-              { label: "Partner Clinics", value: "500+" },
-              { label: "Patients Reached", value: "10,000+" },
-              { label: "Retention Rate", value: "95%" },
-              { label: "Clinical Excellence", value: "100%" }
+              { label: "Partner Health Centers", target: 10, suffix: "+" },
+              { label: "Patients Reached", target: 7000, suffix: "+" },
+              { label: "Retention Rate", target: 95, suffix: "%" },
+              { label: "Clinical Excellence", target: 100, suffix: "%" }
             ].map((stat, i) => (
-              <div key={i} className="glass ghost-border p-8 rounded-sm space-y-2">
-                <div className="text-3xl md:text-4xl font-display text-primary">{stat.value}</div>
-                <div className="text-sm font-body text-foreground/60 uppercase tracking-wider">{stat.label}</div>
-              </div>
+              <AnimatedStat
+                key={i}
+                label={stat.label}
+                target={stat.target}
+                suffix={stat.suffix}
+              />
             ))}
           </motion.div>
 

@@ -19,6 +19,7 @@ export const metadata: Metadata = {
 };
 
 import { AuthProvider } from "@/context/AuthContext";
+import { BackToTopButton } from "@/components/layout/BackToTopButton";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 
@@ -38,6 +39,7 @@ export default function RootLayout({
           <main className="flex-1">
             {children}
           </main>
+          <BackToTopButton />
           <Footer />
         </AuthProvider>
       </body>

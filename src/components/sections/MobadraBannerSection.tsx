@@ -23,7 +23,7 @@ export function MobadraBannerSection() {
             className="space-y-8"
           >
             <div className="inline-flex flex-col items-start gap-2">
-              <span className="text-xl font-bold font-arabic text-primary/80">مبادرة</span>
+              <span className="text-xl font-bold text-primary/80">Creative Mobadra</span>
               <h2 className="text-4xl md:text-5xl font-display font-medium text-foreground">
                 Because Every Patient Deserves More Than A Diagnosis.
               </h2>
