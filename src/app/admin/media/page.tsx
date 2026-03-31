@@ -91,17 +91,12 @@ export default function AdminMediaPage() {
     if (!user) throw new Error("Not signed in");
     const token = await user.getIdToken();
 
-    const { ext, contentType } = validateFile(file);
+    const { ext } = validateFile(file);
     const pathname = `videos/home/${Date.now()}-${slotId}.${ext}`;
 
-    // Use single-part upload (multipart: false). The MPU endpoint
-    // (vercel.com/api/blob/mpu) does not send CORS headers for browser origins.
     const blob = await upload(pathname, file, {
       access: "public",
       handleUploadUrl: "/api/media/handle-upload",
-      multipart: false,
-      contentType,
-      clientPayload: JSON.stringify({ slotId, contentType }),
       headers: {
         Authorization: `Bearer ${token}`,
       },

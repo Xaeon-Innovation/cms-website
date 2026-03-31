@@ -62,15 +62,10 @@ export async function POST(request: NextRequest) {
       token: process.env.BLOB_READ_WRITE_TOKEN,
       request,
       body,
-      onBeforeGenerateToken: async (_pathname, _clientPayload, multipart) => {
-        if (multipart) {
-          throw new Error("Multipart uploads are disabled for media uploads.");
-        }
-
+      onBeforeGenerateToken: async () => {
         return {
           allowedContentTypes: [...ALLOWED_CONTENT_TYPES],
           maximumSizeInBytes: MAX_VIDEO_SIZE_BYTES,
-          addRandomSuffix: false,
         };
       },
     });
