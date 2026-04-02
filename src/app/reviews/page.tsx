@@ -1,22 +1,64 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import { useState, useEffect, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { getApprovedReviews, createReview, Review } from "@/lib/firestore/reviews";
+import {
+  DEFAULT_REVIEW_AVATAR,
+  REVIEW_AVATAR_PATHS,
+  reviewAvatarSrc,
+} from "@/lib/reviewAvatars";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
+
+const reviewAvatarEnum = z.enum(
+  REVIEW_AVATAR_PATHS as unknown as [string, ...string[]]
+);
 
 const reviewSchema = z.object({
   name: z.string().min(2, "Name is required"),
   type: z.enum(["clinic", "patient", "mobadra"]),
   rating: z.number().min(1).max(5),
   text: z.string().min(10, "Please provide a detailed review"),
+  avatarUrl: reviewAvatarEnum,
 });
+
+const formDefaultValues: z.infer<typeof reviewSchema> = {
+  name: "",
+  type: "clinic",
+  rating: 5,
+  text: "",
+  avatarUrl: DEFAULT_REVIEW_AVATAR,
+};
+
+const AVATAR_PAGE_SIZE = 5;
+
+function avatarPageMaxStart(length: number) {
+  if (length <= AVATAR_PAGE_SIZE) return 0;
+  return Math.floor((length - 1) / AVATAR_PAGE_SIZE) * AVATAR_PAGE_SIZE;
+}
+
+const avatarSlideVariants = {
+  initial: (dir: number) => ({
+    x: dir > 0 ? 28 : -28,
+    opacity: 0,
+  }),
+  animate: {
+    x: 0,
+    opacity: 1,
+  },
+  exit: (dir: number) => ({
+    x: dir > 0 ? -28 : 28,
+    opacity: 0,
+  }),
+};
 
 export default function ReviewsPage() {
   const [reviews, setReviews] = useState<Review[]>([]);
@@ -28,9 +70,27 @@ export default function ReviewsPage() {
   // Form setup
   const { register, handleSubmit, reset, setValue, watch, formState: { errors } } = useForm<z.infer<typeof reviewSchema>>({
     resolver: zodResolver(reviewSchema),
-    defaultValues: { type: 'clinic', rating: 5 }
+    defaultValues: formDefaultValues,
   });
   const currentRating = watch("rating");
+  const selectedAvatar = watch("avatarUrl");
+  const avatarPageEnd = avatarPageMaxStart(REVIEW_AVATAR_PATHS.length);
+  const [avatarStart, setAvatarStart] = useState(0);
+  const avatarNavDir = useRef(0);
+
+  useEffect(() => {
+    const idx = REVIEW_AVATAR_PATHS.findIndex((p) => p === selectedAvatar);
+    if (idx < 0) return;
+    const target = Math.min(
+      Math.floor(idx / AVATAR_PAGE_SIZE) * AVATAR_PAGE_SIZE,
+      avatarPageEnd
+    );
+    setAvatarStart((prev) => {
+      if (prev === target) return prev;
+      avatarNavDir.current = target > prev ? 1 : -1;
+      return target;
+    });
+  }, [selectedAvatar, avatarPageEnd]);
 
   useEffect(() => {
     fetchReviews();
@@ -47,7 +107,7 @@ export default function ReviewsPage() {
     setSubmitting(true);
     await createReview(values);
     setSuccess(true);
-    reset();
+    reset(formDefaultValues);
     setSubmitting(false);
   };
 
@@ -89,12 +149,24 @@ export default function ReviewsPage() {
               <motion.div key={rev.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
                 <Card className="h-full bg-surface-container/60 hover:bg-surface-container transition-colors border-0">
                   <CardHeader className="pb-4">
-                    <div className="flex justify-between items-start">
-                      <div className="space-y-1">
-                        <CardTitle className="text-lg font-medium">{rev.name}</CardTitle>
-                        <Badge variant="secondary" className="text-[10px]">{rev.type}</Badge>
+                    <div className="flex justify-between items-start gap-3">
+                      <div className="flex min-w-0 flex-1 items-start gap-3">
+                        <div className="relative size-12 shrink-0 overflow-hidden rounded-full bg-surface-container-low ring-1 ring-outline-variant/25">
+                          {/* eslint-disable-next-line @next/next/no-img-element -- local SVG/PNG avatars from /public */}
+                          <img
+                            src={reviewAvatarSrc(rev.avatarUrl)}
+                            alt=""
+                            width={96}
+                            height={96}
+                            className="h-full w-full object-cover"
+                          />
+                        </div>
+                        <div className="min-w-0 space-y-1">
+                          <CardTitle className="text-lg font-medium leading-snug">{rev.name}</CardTitle>
+                          <Badge variant="secondary" className="text-[10px]">{rev.type}</Badge>
+                        </div>
                       </div>
-                      <div className="flex gap-1 text-primary-fixed">
+                      <div className="flex shrink-0 gap-0.5 text-primary-fixed">
                         {Array.from({ length: rev.rating }).map((_, r) => <span key={r}>★</span>)}
                       </div>
                     </div>
@@ -122,19 +194,120 @@ export default function ReviewsPage() {
              </div>
            ) : (
              <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+               <input type="hidden" {...register("avatarUrl")} />
                <Input placeholder="Your Name or Clinic Name" error={!!errors.name} {...register("name")} />
+
+               <fieldset className="space-y-3">
+                 <legend className="text-sm font-body text-foreground/70">
+                   Choose a profile picture
+                 </legend>
+                 <div className="flex min-w-0 items-center gap-2">
+                   <button
+                     type="button"
+                     onClick={() => {
+                       avatarNavDir.current = -1;
+                       setAvatarStart((s) => Math.max(0, s - AVATAR_PAGE_SIZE));
+                     }}
+                     disabled={avatarStart <= 0}
+                     className={cn(
+                       "inline-flex size-10 shrink-0 items-center justify-center rounded-sm border border-outline-variant/25 bg-surface-container-low text-foreground transition-colors",
+                       "hover:border-outline-variant/45 hover:bg-surface-container",
+                       "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30",
+                       "disabled:pointer-events-none disabled:opacity-35"
+                     )}
+                     aria-label="Previous set of profile pictures"
+                   >
+                     <ChevronLeft className="size-5" aria-hidden />
+                   </button>
+                   <div className="relative min-h-[4.5rem] min-w-0 flex-1 overflow-hidden py-1">
+                     <AnimatePresence mode="wait" initial={false}>
+                       <motion.div
+                         key={avatarStart}
+                         role="presentation"
+                         custom={avatarNavDir.current}
+                         variants={avatarSlideVariants}
+                         initial="initial"
+                         animate="animate"
+                         exit="exit"
+                         transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
+                         className="grid grid-cols-5 gap-2 sm:gap-3"
+                       >
+                         {REVIEW_AVATAR_PATHS.slice(avatarStart, avatarStart + AVATAR_PAGE_SIZE).map((path, slotIdx) => {
+                           const index = avatarStart + slotIdx;
+                           const selected = selectedAvatar === path;
+                           const n = index + 1;
+                           return (
+                             <button
+                               key={path}
+                               type="button"
+                               onClick={() => setValue("avatarUrl", path, { shouldValidate: true })}
+                               className={cn(
+                                 "relative mx-auto aspect-square w-full max-w-[3.75rem] overflow-hidden rounded-full ring-2 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 sm:max-w-[4.25rem]",
+                                 selected
+                                   ? "ring-primary shadow-md ring-offset-2 ring-offset-surface-container-low"
+                                   : "ring-transparent opacity-90 hover:opacity-100 hover:ring-outline-variant/45"
+                               )}
+                               aria-label={
+                                 selected
+                                   ? `Profile picture ${n} of ${REVIEW_AVATAR_PATHS.length}, selected`
+                                   : `Select profile picture ${n} of ${REVIEW_AVATAR_PATHS.length}`
+                               }
+                             >
+                               {/* eslint-disable-next-line @next/next/no-img-element */}
+                               <img src={path} alt="" className="h-full w-full object-cover" />
+                             </button>
+                           );
+                         })}
+                       </motion.div>
+                     </AnimatePresence>
+                   </div>
+                   <button
+                     type="button"
+                     onClick={() => {
+                       avatarNavDir.current = 1;
+                       setAvatarStart((s) => Math.min(avatarPageEnd, s + AVATAR_PAGE_SIZE));
+                     }}
+                     disabled={avatarStart >= avatarPageEnd}
+                     className={cn(
+                       "inline-flex size-10 shrink-0 items-center justify-center rounded-sm border border-outline-variant/25 bg-surface-container-low text-foreground transition-colors",
+                       "hover:border-outline-variant/45 hover:bg-surface-container",
+                       "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30",
+                       "disabled:pointer-events-none disabled:opacity-35"
+                     )}
+                     aria-label="Next set of profile pictures"
+                   >
+                     <ChevronRight className="size-5" aria-hidden />
+                   </button>
+                 </div>
+                 {errors.avatarUrl && (
+                   <span className="text-error text-xs">{errors.avatarUrl.message}</span>
+                 )}
+               </fieldset>
                
                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                 <select className="bg-surface-container-low h-12 px-4 border-b border-transparent focus:border-primary font-body text-foreground outline-none" {...register("type")}>
+                 <select
+                   className="w-full h-12 rounded-sm bg-surface-container-low px-4 font-body text-foreground placeholder:text-outline-variant/70 border border-outline-variant/25 transition-[background-color,border-color,box-shadow] duration-200 hover:border-outline-variant/45 hover:bg-surface-container-low/90 focus-visible:outline-none focus-visible:border-primary/70 focus-visible:bg-surface-container focus-visible:ring-2 focus-visible:ring-primary/25 focus-visible:shadow-[0_18px_60px_rgba(0,0,0,0.18)]"
+                   {...register("type")}
+                 >
                    <option value="patient">Patient Care</option>
                    <option value="clinic">Clinic Acquisition</option>
                    <option value="mobadra">Mobadra Initiative</option>
                  </select>
                  
-                 <div className="flex items-center justify-between sm:justify-end gap-2 bg-surface-container-low px-4 min-h-12 border-b border-transparent">
+                 <div className="flex items-center justify-between sm:justify-end gap-2 rounded-sm bg-surface-container-low px-4 min-h-12 border border-outline-variant/25 transition-[background-color,border-color,box-shadow] duration-200 hover:border-outline-variant/45 hover:bg-surface-container-low/90 focus-within:border-primary/70 focus-within:bg-surface-container focus-within:ring-2 focus-within:ring-primary/25 focus-within:shadow-[0_18px_60px_rgba(0,0,0,0.18)]">
                    <span className="text-xs text-foreground/50 mr-2 shrink-0">Rating</span>
                    {[1,2,3,4,5].map(star => (
-                     <button type="button" key={star} onClick={() => setValue('rating', star)} className={`text-xl ${currentRating >= star ? 'text-primary' : 'text-outline-variant'}`}>
+                     <button
+                       type="button"
+                       key={star}
+                       onClick={() => setValue('rating', star)}
+                       className={cn(
+                         "text-xl transition-transform duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/25 rounded-sm px-0.5",
+                         currentRating >= star ? "text-primary" : "text-outline-variant/80",
+                         "hover:scale-110"
+                       )}
+                       aria-label={`Set rating to ${star} star${star === 1 ? "" : "s"}`}
+                     >
                        ★
                      </button>
                    ))}
@@ -144,7 +317,10 @@ export default function ReviewsPage() {
                <div>
                  <textarea 
                   placeholder="Your detailed review..." 
-                  className={`flex w-full min-h-[120px] bg-surface-container-low px-4 py-3 font-body text-base placeholder:text-outline-variant border-b border-transparent focus-visible:outline-none focus:border-primary focus:bg-surface-container transition-all resize-none ${errors.text ? "border-error focus:border-error" : ""}`}
+                  className={cn(
+                    "flex w-full min-h-[120px] rounded-sm bg-surface-container-low px-4 py-3 font-body text-base text-foreground placeholder:text-outline-variant/70 border border-outline-variant/25 transition-[background-color,border-color,box-shadow] duration-200 hover:border-outline-variant/45 hover:bg-surface-container-low/90 focus-visible:outline-none focus-visible:border-primary/70 focus-visible:bg-surface-container focus-visible:ring-2 focus-visible:ring-primary/25 focus-visible:shadow-[0_18px_60px_rgba(0,0,0,0.18)] resize-none",
+                    errors.text && "border-error/70 hover:border-error focus-visible:border-error focus-visible:ring-error/25"
+                  )}
                   {...register("text")} 
                  />
                  {errors.text && <span className="text-error text-xs block mt-1">{errors.text.message}</span>}

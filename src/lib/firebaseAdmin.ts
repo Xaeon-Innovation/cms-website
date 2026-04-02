@@ -1,5 +1,6 @@
 import { cert, getApps, initializeApp } from "firebase-admin/app";
 import { getAuth } from "firebase-admin/auth";
+import { getFirestore } from "firebase-admin/firestore";
 
 function getServiceAccount() {
   const raw = process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
@@ -36,5 +37,17 @@ export function getAdminAuth() {
   }
 
   return getAuth();
+}
+
+export function getAdminDb() {
+  if (!getApps().length) {
+    const serviceAccount = getServiceAccount();
+    if (!serviceAccount) {
+      throw new Error("Missing FIREBASE_SERVICE_ACCOUNT_KEY");
+    }
+    initializeApp({ credential: cert(serviceAccount) });
+  }
+
+  return getFirestore();
 }
 

@@ -15,10 +15,17 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
       <input
         type={type}
         className={cn(
-          "flex h-12 w-full bg-surface-container-low px-4 py-2 font-body text-base file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-outline-variant",
-          "border-b border-transparent focus-visible:outline-none focus:border-primary focus:bg-surface-container transition-all",
+          // Clearer border + "alive" focus/hover feedback (works in light/dark via tokens)
+          "flex h-12 w-full rounded-sm bg-surface-container-low px-4 py-2 font-body text-base text-foreground",
+          "placeholder:text-outline-variant/70",
+          "border border-outline-variant/25 shadow-[0_1px_0_rgba(255,255,255,0.06)_inset]",
+          "transition-[background-color,border-color,box-shadow,transform] duration-200",
+          "hover:border-outline-variant/45 hover:bg-surface-container-low/90",
+          "focus-visible:outline-none focus-visible:border-primary/70 focus-visible:bg-surface-container",
+          "focus-visible:ring-2 focus-visible:ring-primary/25 focus-visible:shadow-[0_0_0_1px_rgba(255,255,255,0.06)_inset,0_18px_60px_rgba(0,0,0,0.18)]",
           "disabled:cursor-not-allowed disabled:opacity-50",
-          error && "border-error focus:border-error focus:ring-0",
+          error &&
+            "border-error/70 hover:border-error focus-visible:border-error focus-visible:ring-error/25",
           className
         )}
         ref={ref}

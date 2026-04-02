@@ -129,9 +129,9 @@ export function ClientsSection() {
   }, [offsets]);
 
   return (
-    <section className="relative overflow-hidden bg-[#07100f] py-20 md:py-32">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_75%_68%_at_50%_50%,rgba(21,51,48,0.95)_0%,rgba(10,25,24,0.94)_56%,rgba(7,15,14,1)_100%)]" />
-      <div className="pointer-events-none absolute left-1/2 top-1/2 h-72 w-72 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(79,152,163,0.12)_0%,transparent_72%)] blur-xl md:h-96 md:w-96" />
+    <section className="relative overflow-hidden bg-surface py-20 md:py-32">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_75%_68%_at_50%_50%,rgba(255,255,255,0.06)_0%,rgba(255,255,255,0.02)_56%,rgba(0,0,0,0)_100%)]" />
+      <div className="pointer-events-none absolute left-1/2 top-1/2 h-72 w-72 -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary-fixed/10 blur-xl md:h-96 md:w-96" />
 
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6">
         <motion.div
@@ -144,12 +144,12 @@ export function ClientsSection() {
           <span className="inline-flex items-center gap-2 rounded-full border border-primary-fixed/15 bg-white/5 px-4 py-1.5 text-xs uppercase tracking-[0.28em] text-primary-fixed/70 backdrop-blur-sm">
             Our Clients
           </span>
-          <h2 className="mt-6 text-3xl sm:text-4xl font-display font-medium leading-tight text-[#ebe3d5] md:text-5xl">
+          <h2 className="mt-6 text-3xl sm:text-4xl font-display font-medium leading-tight text-primary md:text-5xl">
             Brands We&apos;ve
             <br />
             Worked With
           </h2>
-          <p className="mx-auto mt-5 max-w-xl text-sm leading-7 tracking-[0.08em] text-[#c8c3b9]/60 md:text-base md:leading-8">
+          <p className="mx-auto mt-5 max-w-xl text-sm leading-7 tracking-[0.08em] text-foreground/60 md:text-base md:leading-8">
             Let&apos;s craft something that carries meaning, reflects your identity,
             and leaves a lasting impression.
           </p>
@@ -159,10 +159,10 @@ export function ClientsSection() {
           ref={stageRef}
           className="relative mt-16 hidden h-[34rem] w-full overflow-hidden md:block"
         >
-          <div className="pointer-events-none absolute left-1/2 top-1/2 h-[18rem] w-[18rem] -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/5" />
+          <div className="pointer-events-none absolute left-1/2 top-1/2 h-[18rem] w-[18rem] -translate-x-1/2 -translate-y-1/2 rounded-full border border-outline-variant/20" />
 
           <div className="pointer-events-none absolute left-1/2 top-1/2 z-20 w-full max-w-md -translate-x-1/2 -translate-y-1/2 px-6 text-center">
-            <h3 className="text-3xl font-display font-medium leading-tight text-[#ebe3d5]">
+            <h3 className="text-3xl font-display font-medium leading-tight text-primary">
               Trusted by organizations that value clarity, craft, and impact.
             </h3>
           </div>
@@ -173,12 +173,12 @@ export function ClientsSection() {
               ref={(node) => {
                 itemRefs.current[index] = node;
               }}
-              className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-2xl border border-white/10 bg-white/5 px-5 py-4 shadow-[0_18px_50px_rgba(0,0,0,0.24)] backdrop-blur-sm transition-transform duration-300"
+              className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-2xl border border-outline-variant/20 bg-surface-container-low/60 px-5 py-4 shadow-[0_18px_50px_rgba(0,0,0,0.24)] backdrop-blur-sm transition-transform duration-300"
             >
               <img
                 src={client.src}
                 alt={client.name}
-                className={`h-auto max-h-14 ${client.widthClassName} object-contain brightness-0 invert`}
+                className={`h-auto max-h-14 ${client.widthClassName} object-contain`}
               />
             </div>
           ))}
@@ -194,12 +194,12 @@ export function ClientsSection() {
           {clients.map((client) => (
             <div
               key={`${client.name}-mobile`}
-              className="flex min-h-24 items-center justify-center rounded-2xl border border-white/10 bg-white/5 px-4 py-5 backdrop-blur-sm"
+              className="flex min-h-24 items-center justify-center rounded-2xl border border-outline-variant/20 bg-surface-container-low/60 px-4 py-5 backdrop-blur-sm"
             >
               <img
                 src={client.src}
                 alt={client.name}
-                className="h-auto max-h-10 w-auto object-contain brightness-0 invert"
+                className="h-auto max-h-10 w-auto object-contain"
               />
             </div>
           ))}

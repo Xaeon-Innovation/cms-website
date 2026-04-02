@@ -7,6 +7,8 @@ export interface Review {
   type: 'clinic' | 'patient' | 'mobadra';
   rating: number; // 1-5
   text: string;
+  /** Public path under `/assets/pfp/…` chosen at submit time */
+  avatarUrl?: string;
   status: 'pending' | 'approved' | 'rejected';
   createdAt?: Timestamp;
 }

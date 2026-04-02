@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Review, getAllPendingReviews, getApprovedReviews, updateReviewStatus } from "@/lib/firestore/reviews";
+import { reviewAvatarSrc } from "@/lib/reviewAvatars";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
@@ -62,6 +63,16 @@ export default function AdminReviewsPage() {
                <div key={rev.id} className="bg-surface-container rounded-sm border border-outline-variant/10 p-4 sm:p-6 flex flex-col md:flex-row gap-6 justify-between items-start">
                   <div className="space-y-4">
                      <div className="flex flex-wrap items-center gap-3">
+                        <div className="relative size-10 shrink-0 overflow-hidden rounded-full bg-surface-container-low ring-1 ring-outline-variant/20">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            src={reviewAvatarSrc(rev.avatarUrl)}
+                            alt=""
+                            width={80}
+                            height={80}
+                            className="h-full w-full object-cover"
+                          />
+                        </div>
                         <span className="font-display text-primary-container text-lg">{rev.name}</span>
                         <Badge variant="secondary" className="text-[10px]">{rev.type}</Badge>
                         <span className="text-primary-fixed text-sm">{'★'.repeat(rev.rating)}</span>

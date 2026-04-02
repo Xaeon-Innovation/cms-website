@@ -49,7 +49,7 @@ export function MobadraBannerSection() {
             className="grid grid-cols-1 sm:grid-cols-2 gap-4"
           >
             {[
-              "Free Medical Transport", 
+              "Free Transport", 
               "On-Site Coordinators", 
               "Fast-Track Check-In", 
               "Dedicated Support",
