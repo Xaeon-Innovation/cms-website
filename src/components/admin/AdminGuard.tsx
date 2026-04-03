@@ -22,10 +22,9 @@ export default function AdminGuard({ children }: { children: React.ReactNode }) 
 
   if (loading || !authorized) {
     return (
-      <div className="flex bg-surface min-h-screen items-center justify-center text-primary-container">
-        {/* Simple fade-in luxury loader */}
+      <div className="flex min-h-[100dvh] w-full items-center justify-center bg-surface text-primary-container">
         <div className="flex flex-col items-center gap-4 animate-pulse">
-          <div className="w-10 h-10 border-t-2 border-primary rounded-full animate-spin"></div>
+          <div className="h-10 w-10 animate-spin rounded-full border-t-2 border-primary" />
           <p className="text-sm font-['Inter'] tracking-widest uppercase">Authorizing...</p>
         </div>
       </div>

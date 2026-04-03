@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Image from "next/image";
 import { Button } from "../ui/button";
 import Link from "next/link";
 import { HeartPulse, CheckCircle2 } from "lucide-react";
@@ -11,6 +12,20 @@ export function MobadraBannerSection() {
       
       {/* Background Effect */}
       <div className="absolute top-0 right-0 w-[320px] h-[320px] sm:w-[500px] sm:h-[500px] md:w-[800px] md:h-[800px] bg-secondary-container/10 rounded-full blur-[100px] translate-x-1/3 -translate-y-1/3 pointer-events-none" />
+
+      {/* Circle logo watermark — right side, behind content */}
+      <div
+        className="pointer-events-none absolute right-0 top-1/2 z-[1] hidden h-[min(52vw,26rem)] w-[min(52vw,26rem)] -translate-x-6 -translate-y-1/2 opacity-[0.14] md:block lg:h-[min(48vw,28rem)] lg:w-[min(48vw,28rem)] lg:-translate-x-14 lg:opacity-[0.18]"
+        aria-hidden
+      >
+        <Image
+          src="/assets/circlelogo.png"
+          alt=""
+          fill
+          className="object-contain object-right"
+          sizes="(max-width: 1024px) 50vw, 28rem"
+        />
+      </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 md:gap-16 items-center">

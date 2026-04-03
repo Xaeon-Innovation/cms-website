@@ -6,6 +6,12 @@ import { Input } from "@/components/ui/input";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { getAllAdmins, deleteAdminUser, createAdminUser } from "@/lib/firestore/users";
+import {
+  defaultContactSettings,
+  emptySocialLinks,
+  parseContactSettingsDoc,
+  type SiteContactSettings,
+} from "@/lib/siteContactSettings";
 import { Shield, Settings, Trash2, Key, Users } from "lucide-react";
 import { initializeApp, deleteApp } from "firebase/app";
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
@@ -16,11 +22,13 @@ export default function AdminSettingsPage() {
   // Platform States
   const [loadingConfig, setLoadingConfig] = useState(false);
   const [successConfig, setSuccessConfig] = useState(false);
-  const [contactInfo, setContactInfo] = useState({
+  const [contactInfo, setContactInfo] = useState<SiteContactSettings>(() => ({
+    ...defaultContactSettings(),
     phone: "+20 XX XXX XXXX",
     email: "clinic@mobadra.com",
-    address: "Alexandria, Egypt"
-  });
+    address: "Alexandria, Egypt",
+    social: emptySocialLinks(),
+  }));
 
   // Access States
   const [admins, setAdmins] = useState<any[]>([]);
@@ -29,6 +37,28 @@ export default function AdminSettingsPage() {
   const [newAdminPassword, setNewAdminPassword] = useState("");
   const [isCreatingAdmin, setIsCreatingAdmin] = useState(false);
   const [adminError, setAdminError] = useState("");
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const snap = await getDoc(doc(db, "settings", "contact"));
+        const parsed = parseContactSettingsDoc(snap.data() as Record<string, unknown> | undefined);
+        if (cancelled) return;
+        setContactInfo({
+          phone: parsed.phone || "+20 XX XXX XXXX",
+          email: parsed.email || "clinic@mobadra.com",
+          address: parsed.address || "Alexandria, Egypt",
+          social: { ...emptySocialLinks(), ...parsed.social },
+        });
+      } catch {
+        // keep defaults
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   // Load Admin list
   useEffect(() => {
@@ -48,7 +78,16 @@ export default function AdminSettingsPage() {
     e.preventDefault();
     setLoadingConfig(true);
     try {
-      await setDoc(doc(db, "settings", "contact"), contactInfo, { merge: true });
+      await setDoc(
+        doc(db, "settings", "contact"),
+        {
+          phone: contactInfo.phone,
+          email: contactInfo.email,
+          address: contactInfo.address,
+          social: contactInfo.social,
+        },
+        { merge: true }
+      );
       setSuccessConfig(true);
       setTimeout(() => setSuccessConfig(false), 3000);
     } catch (err) {
@@ -168,6 +207,40 @@ export default function AdminSettingsPage() {
                  placeholder="City, Country" 
                />
              </div>
+           </div>
+
+           <div className="space-y-4 max-w-xl border-t border-outline-variant/10 pt-6">
+             <h3 className="font-display text-base text-primary">Social and messaging</h3>
+             <p className="text-xs text-foreground/50 font-body">
+               Leave a field empty to hide that icon on the site. Use full URLs (e.g. https://facebook.com/yourpage). For WhatsApp, paste a wa.me link or enter the number with country code (no + required).
+             </p>
+             {(
+               [
+                 ["facebook", "Facebook URL"] as const,
+                 ["instagram", "Instagram URL"] as const,
+                 ["linkedin", "LinkedIn URL"] as const,
+                 ["twitter", "X (Twitter) URL"] as const,
+                 ["youtube", "YouTube URL"] as const,
+                 ["tiktok", "TikTok URL"] as const,
+                 ["whatsapp", "WhatsApp (number or wa.me link)"] as const,
+               ] as const
+             ).map(([key, label]) => (
+               <div key={key}>
+                 <label className="text-xs font-body text-foreground/50 uppercase tracking-widest block mb-2">
+                   {label}
+                 </label>
+                 <Input
+                   value={contactInfo.social[key]}
+                   onChange={(e) =>
+                     setContactInfo({
+                       ...contactInfo,
+                       social: { ...contactInfo.social, [key]: e.target.value },
+                     })
+                   }
+                   placeholder={key === "whatsapp" ? "https://wa.me/971501234567 or 971501234567" : "https://"}
+                 />
+               </div>
+             ))}
            </div>
 
            <div className="pt-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-t border-outline-variant/10">

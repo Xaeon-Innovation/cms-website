@@ -32,8 +32,9 @@ export default function AboutPage() {
           setEmployees(data);
           setDepartmentOrder(settings.departmentOrder);
         }
-      } catch (e: any) {
-        if (mounted) setTeamError(e?.message || "Failed to load team");
+      } catch (e: unknown) {
+        const message = e instanceof Error ? e.message : "Failed to load team";
+        if (mounted) setTeamError(message);
       } finally {
         if (mounted) setTeamLoading(false);
       }
@@ -79,34 +80,36 @@ export default function AboutPage() {
         </motion.div>
       </section>
 
-      {/* Event / community banner — between identity hero & Who We Are */}
+      {/* Prize / team banner — between identity hero & Who We Are */}
       <section
-        className="relative mt-16 md:mt-20 w-full min-h-[min(68vh,30rem)] md:min-h-[min(72vh,36rem)]"
-        aria-label="Events and community"
+        className="relative mt-16 md:mt-20 w-full min-h-[min(72vh,36rem)] md:min-h-[min(75vh,40rem)]"
+        aria-label="Team recognition"
       >
         <Image
-          src="/assets/event.jpeg"
-          alt="Creative Multi Solutions hosting a workshop with Creative Mobadra and Creative Way Event branding"
+          src="/assets/prize.jpeg"
+          alt="Creative Multi Solutions team with partners at an award presentation"
           fill
           className="object-cover object-center"
           sizes="100vw"
           priority={false}
         />
-        <div className="absolute inset-0 bg-black/55" aria-hidden />
-        <div className="relative z-10 flex min-h-[min(68vh,30rem)] md:min-h-[min(72vh,36rem)] max-w-7xl mx-auto items-center justify-end px-4 py-14 sm:px-6 md:py-20">
+        <div className="absolute inset-0 bg-black/60" aria-hidden />
+        <div className="relative z-10 flex min-h-[min(72vh,36rem)] md:min-h-[min(75vh,40rem)] max-w-7xl mx-auto items-center px-4 py-16 sm:px-6 md:py-20">
           <motion.div
-            initial={{ opacity: 0, x: 16 }}
-            whileInView={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.7 }}
-            className="ml-auto w-full max-w-md text-right sm:max-w-lg md:max-w-xl"
+            transition={{ duration: 0.75 }}
+            className="max-w-3xl"
           >
-            <p className="font-body text-lg leading-relaxed text-white md:text-xl">
-              We step into the room—not only with strategy on slides, but with programs, workshops, and initiatives
-              like{" "}
-              <span className="font-medium text-white">Creative Mobadra</span> that turn marketing expertise into
-              real-world impact for clinics and communities.
+            <p className="mb-3 font-body text-xs uppercase tracking-[0.2em] text-white/70">
+              Creative Multi Solutions
             </p>
+            <h2 className="font-display text-3xl font-medium leading-[1.15] text-white sm:text-4xl md:text-5xl lg:text-[2.75rem] lg:leading-tight">
+              Empowered by People
+              <br />
+              <span className="text-white/90">Driven by Passion</span>
+            </h2>
           </motion.div>
         </div>
       </section>
@@ -132,39 +135,34 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Full-bleed banner — prize / team moment (between Who We Are & Core Values) */}
+      {/* Event / community banner — between Who We Are & Core Values */}
       <section
-        className="relative w-full min-h-[min(72vh,36rem)] md:min-h-[min(75vh,40rem)]"
-        aria-label="Team recognition"
+        className="relative w-full min-h-[min(68vh,30rem)] md:min-h-[min(72vh,36rem)]"
+        aria-label="Events and community"
       >
         <Image
-          src="/assets/prize.jpeg"
-          alt="Creative Multi Solutions team with partners at an award presentation"
+          src="/assets/event.jpeg"
+          alt="Creative Multi Solutions hosting a workshop with Creative Mobadra and Creative Way Event branding"
           fill
           className="object-cover object-center"
           sizes="100vw"
           priority={false}
         />
-        <div
-          className="absolute inset-0 bg-black/60"
-          aria-hidden
-        />
-        <div className="relative z-10 flex min-h-[min(72vh,36rem)] md:min-h-[min(75vh,40rem)] max-w-7xl mx-auto items-center px-4 py-16 sm:px-6 md:py-20">
+        <div className="absolute inset-0 bg-black/55" aria-hidden />
+        <div className="relative z-10 flex min-h-[min(68vh,30rem)] md:min-h-[min(72vh,36rem)] max-w-7xl mx-auto items-center justify-end px-4 py-14 sm:px-6 md:py-20">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0, x: 16 }}
+            whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.75 }}
-            className="max-w-3xl"
+            transition={{ duration: 0.7 }}
+            className="ml-auto w-full max-w-md text-right sm:max-w-lg md:max-w-xl"
           >
-            <p className="mb-3 font-body text-xs uppercase tracking-[0.2em] text-white/70">
-              Creative Multi Solutions
+            <p className="font-body text-lg leading-relaxed text-white md:text-xl">
+              We step into the room, not only with strategy on slides, but with programs, workshops, and initiatives
+              like{" "}
+              <span className="font-medium text-white">Creative Mobadra</span> that turn marketing expertise into
+              real-world impact for clinics and communities.
             </p>
-            <h2 className="font-display text-3xl font-medium leading-[1.15] text-white sm:text-4xl md:text-5xl lg:text-[2.75rem] lg:leading-tight">
-              Empowered by People
-              <br />
-              <span className="text-white/90">Driven by Passion</span>
-            </h2>
           </motion.div>
         </div>
       </section>

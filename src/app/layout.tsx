@@ -22,10 +22,8 @@ export const metadata: Metadata = {
 };
 
 import { AuthProvider } from "@/context/AuthContext";
-import { BackToTopButton } from "@/components/layout/BackToTopButton";
+import { ConditionalRootChrome } from "@/components/layout/ConditionalRootChrome";
 import { PageLoaderOverlay } from "@/components/layout/PageLoaderOverlay";
-import { Navbar } from "@/components/layout/Navbar";
-import { Footer } from "@/components/layout/Footer";
 import { getGlobalTheme } from "@/lib/siteTheme";
 
 export default async function RootLayout({
@@ -43,7 +41,7 @@ export default async function RootLayout({
       data-mode="dark"
       suppressHydrationWarning
     >
-      <body className="min-h-full flex flex-col pt-20">
+      <body className="flex min-h-full flex-col">
         <Script
           id="cms-theme-init"
           strategy="beforeInteractive"
@@ -62,12 +60,7 @@ export default async function RootLayout({
         />
         <AuthProvider>
           <PageLoaderOverlay />
-          <Navbar />
-          <main className="flex-1">
-            {children}
-          </main>
-          <BackToTopButton />
-          <Footer />
+          <ConditionalRootChrome>{children}</ConditionalRootChrome>
         </AuthProvider>
       </body>
     </html>

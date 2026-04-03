@@ -1,7 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -9,6 +9,13 @@ import * as z from "zod";
 import { createLead } from "@/lib/firestore/leads";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { SocialLinksRow } from "@/components/social/SocialLinksRow";
+import {
+  emptySocialLinks,
+  fetchContactSettings,
+  resolveSocialLinks,
+  type SiteContactSettings,
+} from "@/lib/siteContactSettings";
 
 const leadSchema = z.object({
   name: z.string().min(2, "Name is required"),
@@ -18,9 +25,31 @@ const leadSchema = z.object({
   message: z.string().optional(),
 });
 
+const FALLBACK: Pick<SiteContactSettings, "phone" | "email" | "address"> = {
+  phone: "+971503859003",
+  email: "info@creativemultisolutions.com",
+  address: "AlWadi Building, Office 203\nSheikh Zaid Road, Dubai, U.A.E",
+};
+
 export default function ContactPageClient({ mapSlot }: { mapSlot: ReactNode }) {
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [contact, setContact] = useState<SiteContactSettings | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const data = await fetchContactSettings();
+        if (!cancelled) setContact(data);
+      } catch {
+        if (!cancelled) setContact(null);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const {
     register,
@@ -40,9 +69,14 @@ export default function ContactPageClient({ mapSlot }: { mapSlot: ReactNode }) {
     setSubmitting(false);
   };
 
+  const phone = contact?.phone?.trim() || FALLBACK.phone;
+  const email = contact?.email?.trim() || FALLBACK.email;
+  const address = contact?.address?.trim() || FALLBACK.address;
+  const socialLinks = resolveSocialLinks(contact?.social ?? emptySocialLinks());
+
   return (
-    <div className="bg-surface pt-28 md:pt-32 pb-20 md:pb-24">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 grid grid-cols-1 lg:grid-cols-2 gap-10 md:gap-16">
+    <div className="bg-surface pb-20 pt-28 md:pb-24 md:pt-32">
+      <div className="mx-auto grid max-w-7xl grid-cols-1 gap-10 px-4 sm:px-6 md:gap-16 lg:grid-cols-2">
         <motion.div
           initial={{ opacity: 0, x: -30 }}
           animate={{ opacity: 1, x: 0 }}
@@ -50,38 +84,66 @@ export default function ContactPageClient({ mapSlot }: { mapSlot: ReactNode }) {
           className="space-y-12"
         >
           <div className="space-y-4">
-            <h1 className="text-4xl sm:text-5xl font-display font-medium text-primary">
-              Get in Touch
-            </h1>
-            <p className="text-base md:text-lg text-foreground/70 font-body">
-              Ready to transform your patient acquisition? We bring the finest digital
-              strategies directly to your clinic doors.
+            <h1 className="font-display text-4xl font-medium text-primary sm:text-5xl">Get in Touch</h1>
+            <p className="font-body text-base text-foreground/70 md:text-lg">
+              Ready to transform your patient acquisition? We bring the finest digital strategies directly to your
+              clinic doors.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
-            <div className="space-y-2">
-              <h4 className="font-display text-primary-fixed uppercase tracking-widest text-sm">
-                Headquarters
-              </h4>
-              <p className="font-body text-foreground/80 leading-relaxed">
-                AlWadi Building, Office 203
-                <br />
-                Sheikh Zaid Road, Dubai, U.A.E
-              </p>
+          <div className="max-w-2xl">
+            <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 sm:gap-x-14 sm:gap-y-0 sm:items-start">
+              <section className="flex min-h-0 flex-col gap-3">
+                <h4 className="font-display text-xs font-semibold uppercase tracking-[0.2em] text-primary-fixed">
+                  Headquarters
+                </h4>
+                <p className="whitespace-pre-line font-body text-[0.9375rem] leading-[1.65] text-foreground/85">
+                  {address}
+                </p>
+              </section>
+              <section className="flex min-h-0 flex-col gap-3">
+                <h4 className="font-display text-xs font-semibold uppercase tracking-[0.2em] text-primary-fixed">
+                  Contact lines
+                </h4>
+                <dl className="m-0 space-y-4 p-0 font-body text-[0.9375rem] leading-[1.65]">
+                  <div className="m-0">
+                    <dt className="mb-1 text-[0.6875rem] font-medium uppercase tracking-wider text-foreground/55">
+                      Email
+                    </dt>
+                    <dd className="m-0">
+                      <a
+                        href={`mailto:${email}`}
+                        className="text-primary-fixed underline-offset-[3px] transition-colors hover:underline"
+                      >
+                        {email}
+                      </a>
+                    </dd>
+                  </div>
+                  <div className="m-0">
+                    <dt className="mb-1 text-[0.6875rem] font-medium uppercase tracking-wider text-foreground/55">
+                      Phone
+                    </dt>
+                    <dd className="m-0">
+                      <a
+                        href={`tel:${phone.replace(/\s/g, "")}`}
+                        className="text-primary-fixed underline-offset-[3px] transition-colors hover:underline"
+                      >
+                        {phone}
+                      </a>
+                    </dd>
+                  </div>
+                </dl>
+              </section>
             </div>
-            <div className="space-y-2">
-              <h4 className="font-display text-primary-fixed uppercase tracking-widest text-sm">
-                Contact Lines
-              </h4>
-              <p className="font-body text-foreground/80 leading-relaxed">
-                Email: info@creativemultisolutions.com
-                <br />
-                Phone: +971503859003
-                <br />
-                Phone: +971542090003
-              </p>
-            </div>
+
+            {socialLinks.length > 0 && (
+              <section className="mt-10 border-t border-outline-variant/20 pt-8">
+                <h4 className="mb-4 font-display text-xs font-semibold uppercase tracking-[0.2em] text-primary-fixed">
+                  Follow us
+                </h4>
+                <SocialLinksRow links={socialLinks} className="gap-3.5" />
+              </section>
+            )}
           </div>
 
           {mapSlot}
@@ -92,17 +154,14 @@ export default function ContactPageClient({ mapSlot }: { mapSlot: ReactNode }) {
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
         >
-          <div className="bg-surface-container p-6 sm:p-8 md:p-12 rounded-sm border-t-2 border-primary-fixed shadow-2xl">
-            <h3 className="text-2xl font-display text-foreground mb-8">
-              Direct Consultation Request
-            </h3>
+          <div className="rounded-sm border-t-2 border-primary-fixed bg-surface-container p-6 shadow-2xl sm:p-8 md:p-12">
+            <h3 className="mb-8 font-display text-2xl text-foreground">Direct Consultation Request</h3>
 
             {success ? (
-              <div className="text-center space-y-4 py-8">
-                <h3 className="text-2xl font-display text-primary">Message Sent</h3>
+              <div className="space-y-4 py-8 text-center">
+                <h3 className="font-display text-2xl text-primary">Message Sent</h3>
                 <p className="font-body text-foreground/80">
-                  Our medical acquisition team will review your details and contact you
-                  shortly.
+                  Our medical acquisition team will review your details and contact you shortly.
                 </p>
               </div>
             ) : (
@@ -114,13 +173,11 @@ export default function ContactPageClient({ mapSlot }: { mapSlot: ReactNode }) {
                     {...register("name")}
                   />
                   {errors.name && (
-                    <span className="text-error text-[11px] mt-1 block px-2">
-                      {errors.name.message}
-                    </span>
+                    <span className="mt-1 block px-2 text-[11px] text-error">{errors.name.message}</span>
                   )}
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                   <div>
                     <Input
                       placeholder="Email Address"
@@ -129,9 +186,7 @@ export default function ContactPageClient({ mapSlot }: { mapSlot: ReactNode }) {
                       {...register("email")}
                     />
                     {errors.email && (
-                      <span className="text-error text-[11px] mt-1 block px-2">
-                        {errors.email.message}
-                      </span>
+                      <span className="mt-1 block px-2 text-[11px] text-error">{errors.email.message}</span>
                     )}
                   </div>
                   <div>
@@ -142,16 +197,14 @@ export default function ContactPageClient({ mapSlot }: { mapSlot: ReactNode }) {
                       {...register("phone")}
                     />
                     {errors.phone && (
-                      <span className="text-error text-[11px] mt-1 block px-2">
-                        {errors.phone.message}
-                      </span>
+                      <span className="mt-1 block px-2 text-[11px] text-error">{errors.phone.message}</span>
                     )}
                   </div>
                 </div>
 
                 <div>
                   <select
-                    className="w-full h-12 rounded-sm bg-surface-container-low px-4 font-body text-foreground placeholder:text-outline-variant/70 border border-outline-variant/25 transition-[background-color,border-color,box-shadow] duration-200 hover:border-outline-variant/45 hover:bg-surface-container-low/90 focus-visible:outline-none focus-visible:border-primary/70 focus-visible:bg-surface-container focus-visible:ring-2 focus-visible:ring-primary/25 focus-visible:shadow-[0_18px_60px_rgba(0,0,0,0.18)]"
+                    className="h-12 w-full rounded-sm border border-outline-variant/25 bg-surface-container-low px-4 font-body text-foreground transition-[background-color,border-color,box-shadow] duration-200 placeholder:text-outline-variant/70 hover:border-outline-variant/45 hover:bg-surface-container-low/90 focus-visible:bg-surface-container focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/25 focus-visible:border-primary/70 focus-visible:shadow-[0_18px_60px_rgba(0,0,0,0.18)]"
                     {...register("service")}
                   >
                     <option value="acquisition">Patient Acquisition Funnels</option>
@@ -164,7 +217,7 @@ export default function ContactPageClient({ mapSlot }: { mapSlot: ReactNode }) {
                 <div>
                   <textarea
                     placeholder="Tell us about your clinic's goals..."
-                    className="flex w-full min-h-[140px] rounded-sm bg-surface-container-low px-4 py-3 font-body text-base text-foreground placeholder:text-outline-variant/70 border border-outline-variant/25 transition-[background-color,border-color,box-shadow] duration-200 hover:border-outline-variant/45 hover:bg-surface-container-low/90 focus-visible:outline-none focus-visible:border-primary/70 focus-visible:bg-surface-container focus-visible:ring-2 focus-visible:ring-primary/25 focus-visible:shadow-[0_18px_60px_rgba(0,0,0,0.18)] resize-none"
+                    className="flex min-h-[140px] w-full resize-none rounded-sm border border-outline-variant/25 bg-surface-container-low px-4 py-3 font-body text-base text-foreground transition-[background-color,border-color,box-shadow] duration-200 placeholder:text-outline-variant/70 hover:border-outline-variant/45 hover:bg-surface-container-low/90 focus-visible:bg-surface-container focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/25 focus-visible:border-primary/70 focus-visible:shadow-[0_18px_60px_rgba(0,0,0,0.18)]"
                     {...register("message")}
                   />
                 </div>
