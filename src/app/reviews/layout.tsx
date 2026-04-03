@@ -1,12 +1,23 @@
+import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import type { Review } from "@/lib/firestore/reviews";
 import { getApprovedReviewsForSeo } from "@/lib/firestore/reviews-server";
+import { getSiteUrl } from "@/lib/siteUrl";
 
-const SITE =
-  process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ||
-  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "https://www.creativemultisolutions.com");
+export const metadata: Metadata = {
+  title: "Reviews & Success Stories",
+  description:
+    "Read verified client and patient reviews of Creative Multi Solutions — medical marketing and digital growth for UAE healthcare providers.",
+  alternates: { canonical: "/reviews" },
+  openGraph: {
+    title: "Reviews | Creative Multi Solutions UAE",
+    description:
+      "Real feedback from clinics, hospitals, and patients on our Dubai-based medical marketing work.",
+    url: "/reviews",
+  },
+};
 
-function reviewsJsonLd(reviews: Review[]) {
+function reviewsJsonLd(reviews: Review[], site: string) {
   const items = reviews.map((r, i) => ({
     "@type": "ListItem",
     position: i + 1,
@@ -23,7 +34,7 @@ function reviewsJsonLd(reviews: Review[]) {
       itemReviewed: {
         "@type": "Organization",
         name: "Creative Multi Solutions",
-        url: SITE,
+        url: site,
       },
     },
   }));
@@ -41,7 +52,7 @@ export default async function ReviewsLayout({ children }: { children: ReactNode 
   let payload: Record<string, unknown> | null = null;
   try {
     const list = await getApprovedReviewsForSeo(40);
-    if (list.length > 0) payload = reviewsJsonLd(list);
+    if (list.length > 0) payload = reviewsJsonLd(list, getSiteUrl());
   } catch {
     // Missing admin credentials in dev, or index missing — skip JSON-LD
   }
