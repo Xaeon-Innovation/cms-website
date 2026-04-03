@@ -257,6 +257,9 @@ export default function ReviewsPage() {
                    Thank you! Your review was saved for moderation. Paste your message on Google and Facebook — we
                    tried to copy it for you.
                  </p>
+                 <p className="mt-3 font-body text-foreground/85">
+                   Would you also share this on Google and Facebook? It helps us a lot.
+                 </p>
                  {clipboardHint === "copied" && (
                    <p className="mt-2 text-sm font-body text-primary-fixed">Message copied to your clipboard.</p>
                  )}
