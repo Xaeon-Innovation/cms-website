@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Copy, ExternalLink } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -45,6 +45,19 @@ function avatarPageMaxStart(length: number) {
   return Math.floor((length - 1) / AVATAR_PAGE_SIZE) * AVATAR_PAGE_SIZE;
 }
 
+const GOOGLE_REVIEW_URL =
+  typeof process.env.NEXT_PUBLIC_GOOGLE_REVIEW_URL === "string"
+    ? process.env.NEXT_PUBLIC_GOOGLE_REVIEW_URL.trim()
+    : "";
+const FACEBOOK_REVIEW_URL =
+  typeof process.env.NEXT_PUBLIC_FACEBOOK_REVIEW_URL === "string"
+    ? process.env.NEXT_PUBLIC_FACEBOOK_REVIEW_URL.trim()
+    : "";
+
+function clipboardReviewMessage(v: z.infer<typeof reviewSchema>): string {
+  return v.text.trim();
+}
+
 const avatarSlideVariants = {
   initial: (dir: number) => ({
     x: dir > 0 ? 28 : -28,
@@ -66,6 +79,8 @@ export default function ReviewsPage() {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [submittedSnapshot, setSubmittedSnapshot] = useState<z.infer<typeof reviewSchema> | null>(null);
+  const [clipboardHint, setClipboardHint] = useState<"idle" | "copied" | "failed">("idle");
 
   // Form setup
   const { register, handleSubmit, reset, setValue, watch, formState: { errors } } = useForm<z.infer<typeof reviewSchema>>({
@@ -103,9 +118,29 @@ export default function ReviewsPage() {
     setLoading(false);
   };
 
+  const copyReviewToClipboard = async (v: z.infer<typeof reviewSchema>) => {
+    try {
+      await navigator.clipboard.writeText(clipboardReviewMessage(v));
+      setClipboardHint("copied");
+    } catch {
+      setClipboardHint("failed");
+    }
+  };
+
+  useEffect(() => {
+    if (!success || !submittedSnapshot) return;
+    setClipboardHint("idle");
+    const text = clipboardReviewMessage(submittedSnapshot);
+    void navigator.clipboard.writeText(text).then(
+      () => setClipboardHint("copied"),
+      () => setClipboardHint("failed")
+    );
+  }, [success, submittedSnapshot]);
+
   const onSubmit = async (values: z.infer<typeof reviewSchema>) => {
     setSubmitting(true);
     await createReview(values);
+    setSubmittedSnapshot(values);
     setSuccess(true);
     reset(formDefaultValues);
     setSubmitting(false);
@@ -133,6 +168,34 @@ export default function ReviewsPage() {
              </button>
           ))}
         </div>
+
+        {(GOOGLE_REVIEW_URL || FACEBOOK_REVIEW_URL) && (
+          <p className="mx-auto mt-8 max-w-xl font-body text-sm text-foreground/65">
+            Prefer to review directly?{" "}
+            {GOOGLE_REVIEW_URL ? (
+              <a
+                href={GOOGLE_REVIEW_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary-fixed underline-offset-2 transition-colors hover:underline"
+              >
+                Google
+              </a>
+            ) : null}
+            {GOOGLE_REVIEW_URL && FACEBOOK_REVIEW_URL ? " · " : null}
+            {FACEBOOK_REVIEW_URL ? (
+              <a
+                href={FACEBOOK_REVIEW_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary-fixed underline-offset-2 transition-colors hover:underline"
+              >
+                Facebook
+              </a>
+            ) : null}
+            .
+          </p>
+        )}
       </section>
 
       {/* Masonry-style Grid */}
@@ -186,11 +249,82 @@ export default function ReviewsPage() {
          <div className="glass p-6 sm:p-8 md:p-12 ghost-border rounded-sm">
            <h3 className="text-2xl font-display text-primary mb-6 text-center">Share Your Experience</h3>
            
-           {success ? (
-             <div className="text-center space-y-4 py-8">
-               <div className="text-4xl text-primary">★</div>
-               <p className="font-body text-foreground">Thank you! Your review has been submitted for moderation.</p>
-               <Button variant="ghost" onClick={() => setSuccess(false)}>Write Another</Button>
+           {success && submittedSnapshot ? (
+             <div className="space-y-6 py-6 text-center sm:text-left">
+               <div className="text-center sm:text-left">
+                 <div className="text-4xl text-primary">★</div>
+                 <p className="mt-3 font-body text-foreground">
+                   Thank you! Your review was saved for moderation. Paste your message on Google and Facebook — we
+                   tried to copy it for you.
+                 </p>
+                 {clipboardHint === "copied" && (
+                   <p className="mt-2 text-sm font-body text-primary-fixed">Message copied to your clipboard.</p>
+                 )}
+                 {clipboardHint === "failed" && (
+                   <p className="mt-2 text-sm font-body text-foreground/70">
+                     Clipboard was blocked. Use Copy below, then open Google / Facebook.
+                   </p>
+                 )}
+               </div>
+               <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:justify-center">
+                 <Button
+                   type="button"
+                   variant="secondary"
+                   className="w-full sm:w-auto"
+                   onClick={() => void copyReviewToClipboard(submittedSnapshot)}
+                 >
+                   <Copy className="mr-2 h-4 w-4" aria-hidden />
+                   Copy message
+                 </Button>
+                 {GOOGLE_REVIEW_URL ? (
+                   <a
+                     href={GOOGLE_REVIEW_URL}
+                     target="_blank"
+                     rel="noopener noreferrer"
+                     className={cn(
+                       "inline-flex h-11 w-full items-center justify-center gap-2 rounded-sm px-6 font-medium shadow-sm transition-all",
+                       "bg-primary-fixed text-on-primary-fixed hover:bg-opacity-95 sm:w-auto"
+                     )}
+                   >
+                     <ExternalLink className="h-4 w-4 shrink-0" aria-hidden />
+                     Open Google reviews
+                   </a>
+                 ) : null}
+                 {FACEBOOK_REVIEW_URL ? (
+                   <a
+                     href={FACEBOOK_REVIEW_URL}
+                     target="_blank"
+                     rel="noopener noreferrer"
+                     className={cn(
+                       "inline-flex h-11 w-full items-center justify-center gap-2 rounded-sm border border-outline-variant/30 px-6 font-medium transition-all",
+                       "bg-surface-container-low text-primary shadow-sm hover:border-primary/35 hover:bg-surface-container sm:w-auto"
+                     )}
+                   >
+                     <ExternalLink className="h-4 w-4 shrink-0" aria-hidden />
+                     Open Facebook recommendations
+                   </a>
+                 ) : null}
+               </div>
+               {!GOOGLE_REVIEW_URL && !FACEBOOK_REVIEW_URL ? (
+                 <p className="text-center text-xs font-body text-foreground/50">
+                   Ask your developer to set{" "}
+                   <code className="text-foreground/70">NEXT_PUBLIC_GOOGLE_REVIEW_URL</code> and{" "}
+                   <code className="text-foreground/70">NEXT_PUBLIC_FACEBOOK_REVIEW_URL</code> (your public review
+                   links). No API keys needed.
+                 </p>
+               ) : null}
+               <div className="flex justify-center pt-2">
+                 <Button
+                   variant="ghost"
+                   onClick={() => {
+                     setSuccess(false);
+                     setSubmittedSnapshot(null);
+                     setClipboardHint("idle");
+                   }}
+                 >
+                   Write another review
+                 </Button>
+               </div>
              </div>
            ) : (
              <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">

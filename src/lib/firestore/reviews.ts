@@ -11,6 +11,9 @@ export interface Review {
   avatarUrl?: string;
   status: 'pending' | 'approved' | 'rejected';
   createdAt?: Timestamp;
+  /** Set when shared to Facebook Page via admin publish flow */
+  facebookPostId?: string;
+  facebookPublishedAt?: Timestamp;
 }
 
 const COLLECTION_NAME = 'reviews';
@@ -28,7 +31,7 @@ export async function getApprovedReviews(typeFilter?: Review['type']): Promise<R
   const reviewsRef = collection(db, COLLECTION_NAME);
   
   // Basic query for approved reviews
-  const filters: any[] = [where('status', '==', 'approved')];
+  const filters = [where('status', '==', 'approved')];
   if (typeFilter) {
     filters.push(where('type', '==', typeFilter));
   }

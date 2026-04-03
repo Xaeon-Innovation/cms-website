@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, startTransition } from "react";
 import { Review, getAllPendingReviews, getApprovedReviews, updateReviewStatus } from "@/lib/firestore/reviews";
 import { reviewAvatarSrc } from "@/lib/reviewAvatars";
 import { Badge } from "@/components/ui/badge";
@@ -11,22 +11,23 @@ export default function AdminReviewsPage() {
   const [tab, setTab] = useState<'pending' | 'approved'>('pending');
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetchData();
-  }, [tab]);
-
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     setLoading(true);
-    const data = tab === 'pending' ? await getAllPendingReviews() : await getApprovedReviews();
+    const data = tab === "pending" ? await getAllPendingReviews() : await getApprovedReviews();
     setReviews(data);
     setLoading(false);
-  };
+  }, [tab]);
 
-  const processReview = async (id: string, status: 'approved' | 'rejected') => {
-    if(confirm(`Are you sure you want to mark this review as ${status}?`)) {
-      await updateReviewStatus(id, status);
-      fetchData();
-    }
+  useEffect(() => {
+    startTransition(() => {
+      void fetchData();
+    });
+  }, [fetchData]);
+
+  const processReview = async (id: string, status: "approved" | "rejected") => {
+    if (!confirm(`Are you sure you want to mark this review as ${status}?`)) return;
+    await updateReviewStatus(id, status);
+    fetchData();
   };
 
   return (
@@ -34,7 +35,9 @@ export default function AdminReviewsPage() {
       <div className="flex justify-between items-center mb-8">
         <div>
            <h1 className="text-3xl font-display text-primary">Reputation Moderation</h1>
-           <p className="text-foreground/70 font-body text-sm mt-1">Approve or reject patient and clinic testimonials.</p>
+           <p className="text-foreground/70 font-body text-sm mt-1">
+             Approve or reject testimonials. After someone submits a review on the site, they get their text copied to the clipboard and links to your public Google and Facebook review pages — no API keys required. Approved reviews appear here on the site and in search JSON-LD.
+           </p>
         </div>
       </div>
 
@@ -77,7 +80,9 @@ export default function AdminReviewsPage() {
                         <Badge variant="secondary" className="text-[10px]">{rev.type}</Badge>
                         <span className="text-primary-fixed text-sm">{'★'.repeat(rev.rating)}</span>
                      </div>
-                     <p className="text-foreground/80 font-body italic text-sm leading-relaxed border-l-2 border-outline-variant/30 pl-4 py-1">"{rev.text}"</p>
+                     <p className="text-foreground/80 font-body italic text-sm leading-relaxed border-l-2 border-outline-variant/30 pl-4 py-1">
+                       &ldquo;{rev.text}&rdquo;
+                     </p>
                   </div>
                   
                   {tab === 'pending' && (
