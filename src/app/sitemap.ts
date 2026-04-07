@@ -9,6 +9,7 @@ const PATHS = [
   "/reviews",
   "/contact",
   "/privacy",
+  "/data-collection",
   "/terms",
 ] as const;
 

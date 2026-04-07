@@ -137,6 +137,9 @@ export function Footer() {
             <Link href="/privacy" className="hover:text-primary">
               Privacy Policy
             </Link>
+            <Link href="/data-collection" className="hover:text-primary">
+              Data Collection Notice
+            </Link>
             <Link href="/terms" className="hover:text-primary">
               Terms of Service
             </Link>
