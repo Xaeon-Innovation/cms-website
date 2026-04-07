@@ -1,14 +1,8 @@
-import { readFile } from "node:fs/promises";
-import path from "node:path";
 import Link from "next/link";
 import { LegalMarkdown } from "@/components/legal/LegalMarkdown";
+import { DATA_COLLECTION_NOTICE_MD } from "@/content/legal";
 
-export default async function DataCollectionPage() {
-  const markdown = await readFile(
-    path.join(process.cwd(), "DATA_COLLECTION_NOTICE_PUBLIC.md"),
-    "utf8",
-  );
-
+export default function DataCollectionPage() {
   return (
     <div className="bg-surface pt-32 pb-24">
       <section className="mx-auto max-w-4xl px-6">
@@ -17,7 +11,7 @@ export default async function DataCollectionPage() {
             Legal
           </p>
           <div className="mt-6">
-            <LegalMarkdown markdown={markdown} />
+            <LegalMarkdown markdown={DATA_COLLECTION_NOTICE_MD} />
           </div>
 
           <div className="mt-12 border-t border-outline-variant/15 pt-8 text-sm leading-7 text-foreground/65">
