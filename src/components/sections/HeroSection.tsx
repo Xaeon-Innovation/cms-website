@@ -8,6 +8,7 @@ import { getMediaSettings } from "@/lib/firestore/media";
 
 const words = ["Visibility", "Authority", "Growth", "Patients"];
 const HERO_VIDEO_FALLBACK = "/assets/videos/13820343_3840_2160_30fps.mp4";
+const HERO_POSTER = "/assets/videos/hero-poster.jpg";
 
 function getVideoMimeType(src: string) {
   const cleanSrc = src.split("?")[0]?.toLowerCase() || "";
@@ -42,25 +43,26 @@ export function HeroSection() {
     };
   }, []);
 
+  const poster = HERO_POSTER;
+
   return (
     <section
       id="hero"
       className="relative min-h-[90vh] flex items-center justify-center overflow-hidden bg-surface pt-20"
     >
-      {/* Background Video */}
       <div className="absolute inset-0 w-full h-full overflow-hidden">
-        <video 
+        <video
           key={videoSrc}
-          autoPlay 
-          loop 
-          muted 
-          playsInline 
+          autoPlay
+          loop
+          muted
+          playsInline
           preload="metadata"
+          poster={poster}
           className="absolute min-w-full min-h-full object-cover top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-0 opacity-80"
         >
           <source src={videoSrc} type={getVideoMimeType(videoSrc)} />
         </video>
-        {/* Dark overlay for text contrast and premium feel */}
         <div className="absolute inset-0 bg-gradient-to-t from-surface via-surface/80 to-surface/50 z-10" />
       </div>
 
@@ -73,9 +75,11 @@ export function HeroSection() {
         >
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full glass ghost-border mb-4 max-w-full">
             <span className="w-2 h-2 rounded-full bg-primary-fixed" />
-            <span className="text-xs sm:text-sm font-body text-primary-fixed uppercase tracking-wider">Creative Multi Solutions</span>
+            <span className="text-xs sm:text-sm font-body text-primary-fixed uppercase tracking-wider">
+              Creative Multi Solutions
+            </span>
           </div>
-          
+
           <h1 className="text-4xl sm:text-5xl md:text-7xl font-display font-medium text-foreground leading-[1.1] max-w-4xl">
             Marketing That Builds{" "}
             <span className="text-primary inline-block min-w-[180px] sm:min-w-[220px] md:min-w-[280px]">
@@ -94,8 +98,8 @@ export function HeroSection() {
           </h1>
 
           <p className="text-base md:text-xl text-foreground/70 font-body max-w-2xl mx-auto mt-6 leading-relaxed">
-            We help brands strengthen their presence, earn trust, and grow with
-            strategies specialized in medical marketing.
+            We help brands strengthen their presence, earn trust, and grow with strategies specialized
+            in medical marketing.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-10 pt-4 sm:pt-8 w-full">

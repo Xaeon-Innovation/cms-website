@@ -3,8 +3,8 @@ import path from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
 
-import { put } from "@vercel/blob";
 import admin from "firebase-admin";
+import { uploadFileToVps } from "./lib/vps-upload.mjs";
 
 function slugify(input) {
   return String(input || "")
@@ -85,6 +85,18 @@ async function main() {
   const root = path.resolve(__dirname, "..");
   const employeesDir = path.join(root, "public", "assets", "employees");
 
+  const secret = process.env.MEDIA_UPLOAD_SECRET;
+  const baseUrl = process.env.NEXT_PUBLIC_MEDIA_BASE_URL;
+  const uploadUrl =
+    process.env.MEDIA_UPLOAD_URL ||
+    (baseUrl ? `${baseUrl.replace(/\/$/, "")}/upload` : "");
+
+  if (!secret || !baseUrl || !uploadUrl) {
+    throw new Error(
+      "Set MEDIA_UPLOAD_SECRET, NEXT_PUBLIC_MEDIA_BASE_URL (and optionally MEDIA_UPLOAD_URL) before seeding."
+    );
+  }
+
   if (!fs.existsSync(employeesDir)) {
     throw new Error(`Employees folder not found: ${employeesDir}`);
   }
@@ -99,51 +111,44 @@ async function main() {
   for (const filePath of files) {
     const rel = path.relative(employeesDir, filePath);
     const parts = rel.split(path.sep);
-    const department = parts[0];
-    const filename = parts.slice(1).join(path.sep);
-
-    const ext = path.extname(filename);
-    const base = path.basename(filename, ext).trim();
-    const name = base;
-    const role = roleFor(department, name);
-
-    const deptSlug = slugify(department) || "general";
-    const nameSlug = slugify(name) || "employee";
-    const pathname = `employees/${deptSlug}/${Date.now()}-${nameSlug}${ext.toLowerCase()}`;
-    const contentType = contentTypeFromExt(ext);
-
-    const buf = fs.readFileSync(filePath);
+    const department = parts.length > 1 ? parts[0] : "general";
+    const base = path.basename(filePath, path.extname(filePath)).trim();
+    const ext = path.extname(filePath).toLowerCase().replace(".", "") || "webp";
+    const pathname = `employees/${slugify(department)}/${slugify(base)}.${ext}`;
 
     console.log(`Uploading ${rel} -> ${pathname}`);
-    const blob = await put(pathname, buf, {
-      access: "public",
-      contentType,
-      addRandomSuffix: false,
+    const uploaded = await uploadFileToVps({
+      secret,
+      uploadUrl,
+      baseUrl,
+      pathname,
+      filePath,
+      contentType: contentTypeFromExt(path.extname(filePath)),
     });
 
-    const docId = `${deptSlug}__${nameSlug}`;
+    const docId = `${slugify(department)}__${slugify(base)}`;
     await firestore
       .collection("employees")
       .doc(docId)
       .set(
         {
-          name,
-          role,
+          name: base,
+          role: roleFor(department, base),
           department,
-          imageUrl: blob.url,
-          blobPath: blob.pathname,
+          imageUrl: uploaded.url,
+          blobPath: uploaded.pathname,
           updatedAt: admin.firestore.FieldValue.serverTimestamp(),
           createdAt: admin.firestore.FieldValue.serverTimestamp(),
         },
         { merge: true }
       );
+    console.log(`  upserted Firestore doc ${docId}`);
   }
 
-  console.log("Done seeding employees.");
+  console.log("Done.");
 }
 
 main().catch((e) => {
   console.error(e);
   process.exit(1);
 });
-

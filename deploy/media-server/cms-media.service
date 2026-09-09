@@ -1,0 +1,15 @@
+[Unit]
+Description=CMS media upload API
+After=network.target
+
+[Service]
+Type=simple
+User=www-data
+WorkingDirectory=/opt/cms-media-server
+EnvironmentFile=/opt/cms-media-server/.env
+ExecStart=/usr/bin/node /opt/cms-media-server/server.js
+Restart=on-failure
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

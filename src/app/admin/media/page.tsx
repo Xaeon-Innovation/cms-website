@@ -1,18 +1,18 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { upload } from "@vercel/blob/client";
 import { useAuth } from "@/context/AuthContext";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { getMediaSettings, HomeVideos, updateHomeVideos } from "@/lib/firestore/media";
+import { uploadToVps } from "@/lib/media/clientUpload";
+import { MAX_VIDEO_SIZE_BYTES } from "@/lib/media/paths";
 
 type UploadResult = {
   url: string;
   pathname: string;
 };
 
-const MAX_VIDEO_SIZE_BYTES = 500 * 1024 * 1024;
 const ACCEPTED_VIDEO_TYPES = new Set(["video/mp4", "video/webm"]);
 
 type Slot = {
@@ -101,7 +101,7 @@ export default function AdminMediaPage() {
     }
 
     if (file.size > MAX_VIDEO_SIZE_BYTES) {
-      throw new Error("Video is too large. Upload files up to 500 MB.");
+      throw new Error("Video is too large. Upload files up to 200 MB.");
     }
 
     return {
@@ -112,8 +112,11 @@ export default function AdminMediaPage() {
 
   function getUploadErrorMessage(error: unknown) {
     if (error instanceof Error && error.message) {
-      if (error.message.includes("BLOB_READ_WRITE_TOKEN")) {
-        return "Blob uploads are not configured in this Vercel environment. Add BLOB_READ_WRITE_TOKEN to the project settings.";
+      if (
+        error.message.includes("MEDIA_UPLOAD_SECRET") ||
+        error.message.includes("NEXT_PUBLIC_MEDIA_BASE_URL")
+      ) {
+        return "VPS media uploads are not configured. Set NEXT_PUBLIC_MEDIA_BASE_URL and MEDIA_UPLOAD_SECRET on Vercel.";
       }
 
       return error.message;
@@ -147,18 +150,15 @@ export default function AdminMediaPage() {
     if (!user) throw new Error("Not signed in");
     const token = await user.getIdToken();
 
-    const { ext } = validateFile(file);
+    const { ext, contentType } = validateFile(file);
     const pathname = `videos/home/${Date.now()}-${slotId}.${ext}`;
 
-    const blob = await upload(pathname, file, {
-      access: "public",
-      handleUploadUrl: "/api/media/handle-upload",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+    return uploadToVps({
+      idToken: token,
+      mintUrl: "/api/media/handle-upload",
+      mintBody: { pathname, contentType },
+      file,
     });
-
-    return { url: blob.url, pathname: blob.pathname };
   };
 
   const onSave = async () => {
@@ -190,7 +190,7 @@ export default function AdminMediaPage() {
       <div className="flex items-end justify-between gap-6 flex-wrap">
         <div>
           <h1 className="text-3xl font-display text-primary">Media</h1>
-          <p className="text-foreground/70 font-body text-sm mt-1">Upload homepage videos to Vercel Blob.</p>
+          <p className="text-foreground/70 font-body text-sm mt-1">Upload homepage videos to your media VPS.</p>
         </div>
         <Badge variant="outline">Homepage videos</Badge>
       </div>

@@ -1,5 +1,7 @@
 .next/
 node_modules/
+deploy/media-server/node_modules/
+deploy/media-server/.env
 
 # logs
 npm-debug.log*

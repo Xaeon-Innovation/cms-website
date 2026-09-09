@@ -15,13 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { ArrowDown, ArrowUp } from "lucide-react";
-
-type UploadResult = {
-  url: string;
-  pathname: string;
-  contentType?: string;
-  size?: number;
-};
+import { deleteFromVps, uploadToVps } from "@/lib/media/clientUpload";
 
 const defaultDepartments = [
   "Founder and executive director",
@@ -88,32 +82,6 @@ export default function AdminEmployeesPage() {
     refresh();
   }, []);
 
-  const uploadToBlob = async (): Promise<UploadResult> => {
-    if (!user) throw new Error("Not signed in");
-    if (!file) throw new Error("Please choose an image");
-
-    const token = await user.getIdToken();
-    const form = new FormData();
-    form.append("file", file);
-    form.append("name", name);
-    form.append("department", effectiveDepartment);
-
-    const res = await fetch("/api/employees/upload", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      body: form,
-    });
-
-    if (!res.ok) {
-      const payload = await res.json().catch(() => ({}));
-      throw new Error(payload?.error || "Upload failed");
-    }
-
-    return (await res.json()) as UploadResult;
-  };
-
   const onCreate = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -127,10 +95,31 @@ export default function AdminEmployeesPage() {
       return;
     }
 
+    if (!file) {
+      setError("Please choose an image.");
+      return;
+    }
+
+    if (!file.type.startsWith("image/")) {
+      setError("Only image uploads are supported.");
+      return;
+    }
+
     try {
       setSaving(true);
 
-      const upload = await uploadToBlob();
+      if (!user) throw new Error("Not signed in");
+      const token = await user.getIdToken();
+      const upload = await uploadToVps({
+        idToken: token,
+        mintUrl: "/api/employees/upload",
+        mintBody: {
+          name: trimmedName,
+          department: trimmedDept,
+          contentType: file.type,
+        },
+        file,
+      });
       await createEmployee({
         name: trimmedName,
         role: trimmedRole,
@@ -160,14 +149,7 @@ export default function AdminEmployeesPage() {
     try {
       if (user?.getIdToken && emp.blobPath) {
         const token = await user.getIdToken();
-        await fetch("/api/employees/delete", {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ urlOrPathname: emp.blobPath }),
-        });
+        await deleteFromVps({ idToken: token, pathname: emp.blobPath });
       }
       await deleteEmployee(emp.id);
       await refresh();
